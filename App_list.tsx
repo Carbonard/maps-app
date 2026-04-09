@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Place, PlaceProps, PlaceListProps, PlaceSetter } from './App_types'
 import {MainListProps, EditPlaceProps, DisplayListProps, RootStackParamList } from './App_types'
-import { ListCtx } from './App';
+import { getListCtx } from './App_context';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -109,13 +109,6 @@ function PlaceItem({place, setPlaces, navigation} : PlaceProps) {
 			<DropdownButton place={place} setPlaces={setPlaces} navigation={navigation} />
 		</View>
 	);
-}
-
-function getListCtx() {
-	const ctx = useContext(ListCtx);
-	if (!ctx)
-		alert('No context');
-	return (ctx);
 }
 
 // function ListWindow({route, navigation, placesList, setPlaces} : MainListProps & {placesList: Place[], setPlaces: PlaceSetter}) {

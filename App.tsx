@@ -5,17 +5,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { createContext, useContext } from 'react';
 
 import { Place, Coordinates, PlaceListProps, PlaceSetter } from './App_types'
 import { ListStack } from './App_list'
+import { ListCtx } from './App_context';
 
-type ListCtxType = {
-	placeList: Place[];
-	setPlaces: PlaceSetter;
-};
-
-export const ListCtx = createContext<ListCtxType>(null!);
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
