@@ -110,7 +110,7 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 
 			<View style={styles.buttonsContainer}>
 				{(changed || place.fav != originalFav)? <Button title="Save" onPress={() => {
-					ctx.setPlaces((prev: Place[]) => prev.map(item => item.id !== place.id? item : {
+					ctx.updatePlaces((prev: Place[]) => prev.map(item => item.id !== place.id? item : {
 						...item,
 						name: name,
 						coordinates: coord,

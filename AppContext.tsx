@@ -1,9 +1,9 @@
 import { createContext, useContext } from 'react';
-import { Place, PlaceSetter } from './App_types';
+import { Place, PlaceUpdater } from './AppTypes';
 
 export type ListCtxType = {
 	placeList: Place[];
-	setPlaces: PlaceSetter;
+	updatePlaces: PlaceUpdater;
 };
 
 export const ListCtx = createContext<ListCtxType>(null!);

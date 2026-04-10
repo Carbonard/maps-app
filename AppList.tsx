@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, Pressable, FlatList, Modal, Alert } fro
 import MapView, { Marker } from 'react-native-maps'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { RootStackParamList, Place, PlaceSetter } from './AppTypes'
+import { RootStackParamList, Place } from './AppTypes'
 import {MainListProps, PlaceProps, DisplayListProps,  } from './AppTypes'
 import { getListCtx } from './AppContext';
 import { EditPlace } from './AppEditPlace';
@@ -13,8 +13,7 @@ import { globalStyles } from './AppStyles';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function DisplayList({route, navigation}: DisplayListProps) {
-	const { placesList } = route.params;
-
+	const placesList = getListCtx().placeList;
 	return(
 	<View style={{flex:1}}>
 	<MapView style={{flex:1}}>
@@ -26,7 +25,9 @@ function DisplayList({route, navigation}: DisplayListProps) {
 	);
 }
 
-function DropdownButton({ place, setPlaces, navigation } : PlaceProps) {
+function DropdownButton({ place, navigation } : PlaceProps) {
+	const updatePlaces = getListCtx().updatePlaces;
+
 	const [isOpen, setOpen] = useState(false);
 	const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 	const buttonRef = useRef<View>(null);
@@ -57,7 +58,7 @@ function DropdownButton({ place, setPlaces, navigation } : PlaceProps) {
 				<DDButton text="Edit" action={() => {navigation.navigate('EditPlace', {place: place})}} />
 				<DDButton text="Delete" action={() => Alert.alert("Confirm", "Delete this place?", [
 						{text: "Delete", onPress: () =>
-							setPlaces(prev => prev.filter(item => item.id !== place.id))},
+							updatePlaces(prev => prev.filter(item => item.id !== place.id))},
 						{text: "Cancel", onPress: () => {;}},
 					])} />
 				<DDButton text="Cancel" action={()=>{}} />
@@ -67,7 +68,7 @@ function DropdownButton({ place, setPlaces, navigation } : PlaceProps) {
 	</>);
 }
 
-function PlaceItem({place, setPlaces, navigation} : PlaceProps) {
+function PlaceItem({place, updatePlaces, navigation} : PlaceProps) {
 
 	return(
 		<View style={styles.listItemPlaces}>
@@ -77,13 +78,12 @@ function PlaceItem({place, setPlaces, navigation} : PlaceProps) {
 			</View>
 			<View style={{flexDirection: 'row'}}>
 				<Text style={styles.listText}>{place.rating != undefined? place.rating + '/' + maxRating : null}</Text>
-				<DropdownButton place={place} setPlaces={setPlaces} navigation={navigation} />
+				<DropdownButton place={place} updatePlaces={updatePlaces} navigation={navigation} />
 			</View>
 		</View>
 	);
 }
 
-// function ListWindow({route, navigation, placesList, setPlaces} : MainListProps & {placesList: Place[], setPlaces: PlaceSetter}) {
 function ListWindow({route, navigation} : MainListProps) {
 	const ctx = getListCtx();
 
@@ -94,16 +94,17 @@ function ListWindow({route, navigation} : MainListProps) {
 			renderItem={({item}) => (
 				<PlaceItem
 					place={item}
-					setPlaces={ctx.setPlaces}
+					updatePlaces={ctx.updatePlaces}
 					navigation={navigation}
 				/>)}
 		/>
-		<Button onPress={() => navigation.navigate('DisplayList', { placesList: ctx.placeList })} title='View Map' />
+		<Button onPress={() => navigation.navigate('DisplayList')} title='View Map' />
 		</View>
 	)
 }
 
-export function ListStack({placesList, setPlaces} : {placesList: Place[], setPlaces: PlaceSetter}) {
+export function ListStack() {
+	
 	return(
 		<Stack.Navigator initialRouteName='MainList'>
 			<Stack.Screen name="MainList" options={{headerShown: false}} component={ListWindow} />

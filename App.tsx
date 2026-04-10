@@ -9,13 +9,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { Place, Coordinates, PlaceListProps } from './AppTypes'
 import { ListStack } from './AppList'
 import { ListCtx } from './AppContext';
+import { usePlaces } from './AppSaveData';
 
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 const Tab = createBottomTabNavigator();
 
-function MapWindow({placesList, setPlaces}: PlaceListProps) {
+function MapWindow({placesList, updatePlaces}: PlaceListProps) {
 	const [userText, setText] = useState<string>('');
 	const [coord, setCoord] = useState<Coordinates | undefined | void>();
 	const [errorMsg, setError] = useState<string>('');
@@ -34,7 +35,7 @@ function MapWindow({placesList, setPlaces}: PlaceListProps) {
 		</Text>
 		<Button title='Add place' onPress={() => {
 			if (debug){
-				setPlaces((prev: Place[]) => [...prev, {id: Math.random().toString(), coordinates: {latitude: 40.515, longitude: -3.663}, name: '42 Madird', fav: false}]);
+				updatePlaces((prev: Place[]) => [...prev, {id: Math.random().toString(), coordinates: {latitude: 40.515, longitude: -3.663}, name: '42 Madird', fav: false}]);
 				return;
 			}
 			if (!userText || userText == '')
@@ -47,7 +48,7 @@ function MapWindow({placesList, setPlaces}: PlaceListProps) {
 				setError('Select a point on the map!');
 				return;
 			}
-			setPlaces((prev: Place[]) => [...prev, {id: Math.random().toString(), coordinates: coord, name: userText, fav: false}]);
+			updatePlaces((prev: Place[]) => [...prev, {id: Math.random().toString(), coordinates: coord, name: userText, fav: false}]);
 			setText('');
 			setCoord();
 			setError('');
@@ -74,7 +75,7 @@ function MapWindow({placesList, setPlaces}: PlaceListProps) {
 }
 
 function MainTabs() {
-	const [placesList, setPlaces] = useState<Place[]>([]);
+	const {placesList, updatePlaces} = usePlaces();
 
 	const createIcon = (Name: IconName, focusName: IconName) => (
 		useCallback(({ focused, color, size }: {focused: boolean, color: string, size: number}) =>
@@ -84,30 +85,30 @@ function MainTabs() {
 						color={color}
 					/>, [Name, focusName]));
 	const displayMapWindow = useCallback(
-		(props: any) => <MapWindow {...props} placesList={placesList} setPlaces={setPlaces} />,
-		[ placesList, setPlaces ]
+		(props: any) => <MapWindow {...props} placesList={placesList} updatePlaces={updatePlaces} />,
+		[ placesList, updatePlaces ]
 	);
 	const displayListStack = useCallback(
-		(props: any) => <ListStack {...props} placesList={placesList} setPlaces={setPlaces} />,
-		[ placesList, setPlaces ]
+		(props: any) => <ListStack {...props} placesList={placesList} updatePlaces={updatePlaces} />,
+		[ placesList, updatePlaces ]
 	);
 
 	return(
-		<ListCtx.Provider value={{placeList: placesList, setPlaces: setPlaces}}>
-		<Tab.Navigator initialRouteName="Explorer"
-			screenOptions={{
-				tabBarActiveTintColor: 'red',
-				tabBarInactiveTintColor: 'black',
-			}}>
-			<Tab.Screen name="List of places"
-				options={{ tabBarIcon: createIcon("list-outline", "list-sharp") }}
-				children={displayListStack}
-			/>
-			<Tab.Screen name="Explorer"
-				options={{ tabBarIcon: createIcon("compass-outline", "compass-sharp") }}
-				children={displayMapWindow}
-			/>
-		</Tab.Navigator>
+		<ListCtx.Provider value={{placeList: placesList, updatePlaces: updatePlaces}}>
+			<Tab.Navigator initialRouteName="Explorer"
+				screenOptions={{
+					tabBarActiveTintColor: 'red',
+					tabBarInactiveTintColor: 'black',
+				}}>
+				<Tab.Screen name="List of places"
+					options={{ tabBarIcon: createIcon("list-outline", "list-sharp") }}
+					children={displayListStack}
+				/>
+				<Tab.Screen name="Explorer"
+					options={{ tabBarIcon: createIcon("compass-outline", "compass-sharp") }}
+					children={displayMapWindow}
+				/>
+			</Tab.Navigator>
 		</ListCtx.Provider>
 	);
 }

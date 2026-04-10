@@ -11,19 +11,22 @@ export type Place = {
 	coordinates: Coordinates;
 	fav: boolean;
 	rating?: number;
+	visited?: boolean;
+	wished?: boolean;
 };
 
-export type PlaceSetter = React.Dispatch<React.SetStateAction<Place[]>>;
+// export type PlaceSetter = React.Dispatch<React.SetStateAction<Place[]>>;
+export type PlaceUpdater = (updater: (prev: Place[]) => Place[]) => void;
 
 export interface PlaceProps {
 	place: Place;
-	setPlaces: PlaceSetter;
+	updatePlaces: PlaceUpdater;
 	navigation: any;
 };
 
 export interface PlaceListProps {
 	placesList: Place[];
-	setPlaces: PlaceSetter;
+	updatePlaces: PlaceUpdater;
 };
 
 // PROPS
@@ -31,9 +34,9 @@ export interface PlaceListProps {
 export type RootStackParamList = {
   MainList: undefined;
   EditPlace: { place: Place };
-  DisplayList: { placesList: Place[] };
+  DisplayList: undefined;
 };
 
-export type MainListProps = NativeStackScreenProps<RootStackParamList, 'MainList'>;// & {placesList: Place[]; setPlaces: PlaceSetter};
-export type EditPlaceProps = NativeStackScreenProps<RootStackParamList, 'EditPlace'>;// & { place: Place; setPlaces: PlaceSetter };
+export type MainListProps = NativeStackScreenProps<RootStackParamList, 'MainList'>;// & {placesList: Place[]; updatePlaces: PlaceSetter};
+export type EditPlaceProps = NativeStackScreenProps<RootStackParamList, 'EditPlace'>;// & { place: Place; updatePlaces: PlaceSetter };
 export type DisplayListProps = NativeStackScreenProps<RootStackParamList, 'DisplayList'>;// & { placesList: Place[] };

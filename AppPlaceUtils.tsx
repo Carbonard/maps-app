@@ -12,7 +12,7 @@ export function FavButton({placeId}: {placeId: string}) {
 	return(
 		<Pressable style={{alignSelf: 'flex-start'}}
 			onPress={() =>
-				ctx.setPlaces((prev: Place[]) =>
+				ctx.updatePlaces((prev: Place[]) =>
 					prev.map((mapPlace: Place) =>
 						mapPlace.id === place.id? {...mapPlace, fav: !mapPlace.fav} : mapPlace))}
 		>
