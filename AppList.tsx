@@ -1,11 +1,14 @@
-import { useState, useRef, useCallback, useContext } from 'react';
-import { StyleSheet, Text, View, Button, Pressable, FlatList, TextInput, Modal } from 'react-native';
+import { useState, useRef } from 'react';
+import { StyleSheet, Text, View, Button, Pressable, FlatList, Modal, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { Place, PlaceProps, PlaceListProps, PlaceSetter } from './App_types'
-import {MainListProps, EditPlaceProps, DisplayListProps, RootStackParamList } from './App_types'
-import { getListCtx } from './App_context';
+import { RootStackParamList, Place, PlaceSetter } from './AppTypes'
+import {MainListProps, PlaceProps, DisplayListProps,  } from './AppTypes'
+import { getListCtx } from './AppContext';
+import { EditPlace } from './AppEditPlace';
+import { FavButton, maxRating } from './AppPlaceUtils';
+import { globalStyles } from './AppStyles';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -20,34 +23,6 @@ function DisplayList({route, navigation}: DisplayListProps) {
 		))}
 	</MapView>
 	</View>
-	);
-}
-
-function EditPlace({route, navigation}: EditPlaceProps) {
-	const { place } = route.params;
-	const ctx = getListCtx();
-	const [changed, setChanged] = useState<boolean>(false);
-	const [name, setName] = useState<string>(place.name);
-
-	return (
-		<View style={{alignItems: 'center'}}>
-			<Text>Name</Text>
-			<TextInput
-				value={name}
-				onChangeText={text => {setName(text); setChanged(true)}}
-				style={{borderWidth:1, margin:10, width: 'auto', minWidth: 100 }}
-			/>
-			<View style={{flexDirection: 'row', justifyContent: 'space-around', alignSelf:'stretch' }}>
-				{changed? <Button title="Save" onPress={() => {
-					ctx.setPlaces((prev: Place[]) => prev.map(item => item.id !== place.id? item : {
-						...item,
-						name: name
-					}));
-					navigation.goBack();
-				}}/> : null}
-				<Button title="Cancel" onPress={navigation.goBack}/>
-			</View>
-		</View>
 	);
 }
 
@@ -76,14 +51,15 @@ function DropdownButton({ place, setPlaces, navigation } : PlaceProps) {
 	<Modal visible={isOpen} transparent >
 		<Pressable style={{flex:1}} onPress={() => setOpen(false)}>
 			<View style={[styles.dropdownContainer, {
-				position: 'absolute',
 				top: menuPosition.top,
 				right: 20,
-				backgroundColor: 'white',
-				padding: 10
 			}]}>
 				<DDButton text="Edit" action={() => {navigation.navigate('EditPlace', {place: place})}} />
-				<DDButton text="Delete" action={() => setPlaces(prev => prev.filter(item => item.id !== place.id))} />
+				<DDButton text="Delete" action={() => Alert.alert("Confirm", "Delete this place?", [
+						{text: "Delete", onPress: () =>
+							setPlaces(prev => prev.filter(item => item.id !== place.id))},
+						{text: "Cancel", onPress: () => {;}},
+					])} />
 				<DDButton text="Cancel" action={()=>{}} />
 			</View>
 		</Pressable>
@@ -96,17 +72,13 @@ function PlaceItem({place, setPlaces, navigation} : PlaceProps) {
 	return(
 		<View style={styles.listItemPlaces}>
 			<View style={{flexDirection: 'row', flex: 1}}>
-				<Pressable onPress={() =>
-					setPlaces((prev: Place[]) =>
-						prev.map((mapPlace: Place) =>
-							mapPlace.id === place.id? {...mapPlace, fav: !mapPlace.fav} : mapPlace))}>
-					<Text style={[styles.listText]}>
-						{place.fav? '❤️' : '🖤'}
-					</Text>
-				</Pressable>
+				<FavButton placeId={place.id}/>
 				<Text style={[styles.listText, {flexShrink:1}]}>{place.name}</Text>
 			</View>
-			<DropdownButton place={place} setPlaces={setPlaces} navigation={navigation} />
+			<View style={{flexDirection: 'row'}}>
+				<Text style={styles.listText}>{place.rating != undefined? place.rating + '/' + maxRating : null}</Text>
+				<DropdownButton place={place} setPlaces={setPlaces} navigation={navigation} />
+			</View>
 		</View>
 	);
 }
@@ -115,7 +87,7 @@ function PlaceItem({place, setPlaces, navigation} : PlaceProps) {
 function ListWindow({route, navigation} : MainListProps) {
 	const ctx = getListCtx();
 
-	return (<>
+	return (<View style={styles.listWindow}>
 		<FlatList
 			data={ctx.placeList}
 			keyExtractor={(item) => item.id}
@@ -127,21 +99,13 @@ function ListWindow({route, navigation} : MainListProps) {
 				/>)}
 		/>
 		<Button onPress={() => navigation.navigate('DisplayList', { placesList: ctx.placeList })} title='View Map' />
-		</>
+		</View>
 	)
 }
 
 export function ListStack({placesList, setPlaces} : {placesList: Place[], setPlaces: PlaceSetter}) {
-	// const displayListWindow = useCallback((props: MainListProps) => (
-	// 				<ListWindow
-	// 					{...props}
-	// 					placesList={placesList}
-	// 					setPlaces={setPlaces}
-	// 				/>), [ placesList, setPlaces ]);
-
 	return(
 		<Stack.Navigator initialRouteName='MainList'>
-			{/* <Stack.Screen name="MainList" options={{headerShown: false}} children={displayListWindow}/> */}
 			<Stack.Screen name="MainList" options={{headerShown: false}} component={ListWindow} />
 			<Stack.Screen name="EditPlace" options={{headerShown: false}} component={EditPlace} />
 			<Stack.Screen name="DisplayList" options={{headerShown: false}} component={DisplayList} />
@@ -150,8 +114,13 @@ export function ListStack({placesList, setPlaces} : {placesList: Place[], setPla
 }
 
 const styles = StyleSheet.create({
+	listWindow: {
+		flex: 1,
+		backgroundColor: '#fff',
+	},
 	listItemPlaces: {
-		borderBottomColor: '#F80',
+		backgroundColor: '#eee',
+		borderBottomColor: '#aaa',
 		borderBottomWidth: 1,
 		// padding: 20,
 		flexDirection: 'row',
@@ -159,23 +128,22 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	listText: {
-		color: '#000',
-		fontSize: 20,
+		...globalStyles.text,
 		padding: 10,
 	},
 	dropdownContainer: {
-		backgroundColor: 'cyan',
+		backgroundColor: '#fff',
 		position: 'absolute',
 		right: 10,
 		top: 40,
-		padding: 10,
+		// padding: 10,
 		flexDirection: 'column',
 		zIndex: 2,
 	},
 	dropdownButton: {
 		borderWidth: 1,
-		borderColor: '#444',
-		padding:5,
+		borderColor: '#aaa',
+		padding:10,
 	},
 	dropdownText: {
 		fontSize: 20,

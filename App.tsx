@@ -6,9 +6,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Place, Coordinates, PlaceListProps, PlaceSetter } from './App_types'
-import { ListStack } from './App_list'
-import { ListCtx } from './App_context';
+import { Place, Coordinates, PlaceListProps } from './AppTypes'
+import { ListStack } from './AppList'
+import { ListCtx } from './AppContext';
 
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -19,7 +19,7 @@ function MapWindow({placesList, setPlaces}: PlaceListProps) {
 	const [userText, setText] = useState<string>('');
 	const [coord, setCoord] = useState<Coordinates | undefined | void>();
 	const [errorMsg, setError] = useState<string>('');
-	const debug = false;
+	const debug = true;
 
 	return(<>
 		<View style={{alignItems: 'center', marginBottom: 25}}>
@@ -34,7 +34,7 @@ function MapWindow({placesList, setPlaces}: PlaceListProps) {
 		</Text>
 		<Button title='Add place' onPress={() => {
 			if (debug){
-				setPlaces((prev: Place[]) => [...prev, {id: Math.random().toString(), coordinates: {latitude: 0, longitude: 0}, name: 'Default Name', fav: false}]);
+				setPlaces((prev: Place[]) => [...prev, {id: Math.random().toString(), coordinates: {latitude: 40.515, longitude: -3.663}, name: '42 Madird', fav: false}]);
 				return;
 			}
 			if (!userText || userText == '')
@@ -48,14 +48,8 @@ function MapWindow({placesList, setPlaces}: PlaceListProps) {
 				return;
 			}
 			setPlaces((prev: Place[]) => [...prev, {id: Math.random().toString(), coordinates: coord, name: userText, fav: false}]);
-			if (debug) {
-				setText('Test Name');
-				setCoord({latitude: 0, longitude: 0});
-			}
-			else {
-				setText('');
-				setCoord();
-			}
+			setText('');
+			setCoord();
 			setError('');
 			}} />
 	</View>
