@@ -5,7 +5,7 @@ import {MapView, Camera, RasterSource, RasterLayer, ShapeSource, CircleLayer, Us
 import { Place, Coordinates } from './AppTypes'
 import { getListCtx } from './AppContext';
 import { useLocationCtx } from './AppLocation';
-import { MapCircle, MapTemplate } from './AppMaps';
+import { animationDuration, MapCircle, MapTemplate } from './AppMaps';
 
 const c0 = {longitude: -3.663, latitude: 40.515}
 
@@ -17,9 +17,10 @@ export function MapWindow() {
 	const [userText, setText] = useState<string>('');
 	const [coord, setCoord] = useState<Coordinates | undefined>(undefined);
 	const [errorMsg, setError] = useState<string>('');
+	const [userCentedMap, setUserCenteredMap] = useState<boolean>(true);
 	const debug = false;
 
-	const { userLocation, refreshLocation } = useLocationCtx();
+	// const { userLocation, refreshLocation } = useLocationCtx();
 
 	// useEffect(() => {refreshLocation()}, []);
 
@@ -27,18 +28,20 @@ export function MapWindow() {
 
 
 	function goToUser(zoom: number) {
-		if (!userLocation) return;
-		refreshLocation();
-		const lat = userLocation.latitude;
-		const lon = userLocation.longitude;
-		cameraRef.current?.setCamera({
-			centerCoordinate: [
-				lon,
-				lat
-			],
-			zoomLevel: zoom,
-			animationDuration: 2000,
-		})
+		setUserCenteredMap(true);
+		setTimeout(() => setUserCenteredMap(false), animationDuration / 2);
+		// if (!userLocation) return;
+		// refreshLocation();
+		// const lat = userLocation.latitude;
+		// const lon = userLocation.longitude;
+		// cameraRef.current?.setCamera({
+		// 	centerCoordinate: [
+		// 		lon,
+		// 		lat
+		// 	],
+		// 	zoomLevel: zoom,
+		// 	animationDuration: 2000,
+		// })
 	};
 
 	return(<>
@@ -75,27 +78,20 @@ export function MapWindow() {
 	</View>
 	<View style={{flex:1, marginVertical: 10}}>
 		<MapTemplate
-			onPress={(feature:any) => {const [longitude, latitude] = feature.geometry.coordinates; setCoord({latitude: latitude, longitude: longitude})}}
-			defaultCamera={false}
+			onPress={(feature:any) => {setUserCenteredMap(false); const [longitude, latitude] = feature.geometry.coordinates; setCoord({latitude: latitude, longitude: longitude})}}
 			cameraRef={cameraRef}
 			zoomLevel={9}
-			centerCoordinate={userLocation !== null? userLocation : undefined}
+			userCentered={userCentedMap}
+			onMapLoaded={() => setUserCenteredMap(false)}
+			displayUser={true}
+			// centerCoordinate={userLocation !== null? userLocation : undefined}
 		>
-			<Camera
-				ref={cameraRef}
-				defaultSettings={{
-					zoomLevel: 9,
-					centerCoordinate: [userLocation? userLocation.longitude : -3.663, userLocation? userLocation.latitude : 40.515]
-				}}
-				maxZoomLevel={18}
-			/>
 			{coord && <MapCircle 
 				center={coord}
 			/>}
 		</MapTemplate>
-		{/* <Text>Your location: ({userLocation?.latitude},{userLocation?.longitude})</Text> */}
 		<View style={{alignSelf: 'center', marginTop: 10}}>
-			{userLocation? <Button title='Find me' onPress={() => goToUser(14)} /> : undefined}
+			<Button title='Find me' onPress={() => goToUser(14)} />
 		</View>
 	</View>
 		</>)

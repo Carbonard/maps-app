@@ -5,19 +5,22 @@ import { globalStyles } from "./AppStyles";
 
 export const maxRating = 10;
 
-export function FavButton({placeId}: {placeId: string}) {
+export function FavButton({placeId, onPress, checkFav}: {placeId: string, onPress?: () => void, checkFav?: boolean}) {
 	const ctx = getListCtx();
 	const place = ctx.placeList.filter(p => p.id === placeId)[0];
 
+	if (onPress === undefined)
+		onPress = () => ctx.updatePlaces((prev: Place[]) =>
+							prev.map((mapPlace: Place) =>
+								mapPlace.id === place.id? {...mapPlace, fav: !mapPlace.fav} : mapPlace));
+	if (checkFav === undefined)
+		checkFav = place.fav;
 	return(
 		<Pressable style={{alignSelf: 'flex-start'}}
-			onPress={() =>
-				ctx.updatePlaces((prev: Place[]) =>
-					prev.map((mapPlace: Place) =>
-						mapPlace.id === place.id? {...mapPlace, fav: !mapPlace.fav} : mapPlace))}
+			onPress={onPress}
 		>
 			<Text style={[globalStyles.text, {padding: 10}]}>
-				{place.fav? '❤️' : '🖤'}
+				{checkFav? '❤️' : '🖤'}
 			</Text>
 		</Pressable>
 	);

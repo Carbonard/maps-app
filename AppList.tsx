@@ -42,8 +42,10 @@ function DisplayList({route, navigation}: DisplayListProps) {
 		});
 		
 		return {
-			ne: [maxLng, maxLat],
-			sw: [minLng, minLat]
+			ne: [maxLng + (maxLng - minLng) * 0.1,
+				 maxLat + (maxLat - minLat) * 0.1],
+			sw: [minLng - (maxLng - minLng) * 0.1,
+				 minLat - (maxLat - minLat) * 0.1]
 		};
 	};
 	

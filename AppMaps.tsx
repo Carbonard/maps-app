@@ -3,6 +3,8 @@ import { ReactNode, useState } from 'react';
 import { Coordinates } from './AppTypes';
 import { Button, View, Text } from 'react-native';
 
+export const animationDuration = 1000;
+
 const getTileUrl = (mode: string): {urls: string[], attribution: string} => {
     const baseUrls = [
         'https://mt1.google.com/vt/lyrs=',
@@ -94,17 +96,18 @@ export function MapTemplate ({
 				<RasterLayer id={currentMode+"Layer"} sourceID={currentMode} maxZoomLevel={18} />
 			</RasterSource>
 
-			{defaultCamera && centerCoordinate &&
+			{defaultCamera &&
 			<Camera
 				ref={cameraRef}
 				defaultSettings={{
 					zoomLevel: zoomLevel,
-					centerCoordinate: [centerCoordinate.longitude, centerCoordinate.latitude],
+					centerCoordinate: centerCoordinate? [centerCoordinate.longitude, centerCoordinate.latitude]: undefined,
 				}}
 				maxZoomLevel={18}
 				followUserLocation={userCentered}
 				// followUserMode='normal'
 				bounds={bounds}
+				animationDuration={animationDuration}
 			/>}
 
 			{displayUser &&

@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Button, TextInput, Pressable, Keyboard } from '
 import { Place, Coordinates } from './AppTypes'
 import { EditPlaceProps, } from './AppTypes'
 import { getListCtx } from './AppContext';
-import { maxRating } from './AppPlaceUtils';
+import { FavButton, maxRating } from './AppPlaceUtils';
 import { globalStyles } from './AppStyles';
 import { MapCircle, MapTemplate } from './AppMaps';
 
@@ -29,13 +29,18 @@ function EditionMap({coord, setCoord}: {coord: Coordinates, setCoord: React.Disp
 			centerCoordinate={coord}
 			zoomLevel={15}
 			displayUser={true}
+			userCentered={false}
 		>
 			<MapCircle center={coord}/>
 		</MapTemplate>
 	</View>
 	);
 }
-
+/*
+!=	undef	0
+''			
+'0'			
+*/
 export function EditPlace({route, navigation}: EditPlaceProps) {
 	console.log("Rendering EditPlace");
 	const { place } = route.params;
@@ -43,11 +48,15 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 	const ctx = getListCtx();
 	const [name, setName] = useState<string>(place.name);
 	const [coord, setCoord] = useState<Coordinates>(place.coordinates);
-	const [rating, setRating] = useState<string|undefined>(place.rating != undefined? place.rating.toString() : '');
+	const [rating, setRating] = useState<string>(place.rating != undefined? place.rating.toString() : '');
 	const [fav, setFav] = useState<boolean>(place.fav);
-	const changed = (name != place.name || coord != place.coordinates || rating != place.rating || fav !== place.fav)
+	const changed = ( name != place.name
+		|| coord != place.coordinates
+		|| (parseFloat(rating) != place.rating && rating != '')
+		|| (rating == '' && place.rating === 0)
+		|| fav !== place.fav
+	)
 
-	const originalFav = place.fav;
 	const [width, setWidth] = useState(40);
 	const [height, setHeight] = useState(20);
 	const ratingRef = useRef<TextInput>(null);
@@ -83,9 +92,9 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 					placeholderTextColor='#ccc'
 					keyboardType='numeric'
 					value={rating?? ''}
-					onChangeText={(rating: string | undefined) => {
+					onChangeText={(rating) => {
 						rating = rating?.replace(',', '.');
-						checkRating(rating)? setRating(rating) : {}}}
+						checkRating(rating) && setRating(rating)}}
 					onContentSizeChange={(e) => {setHeight(e.nativeEvent.contentSize.height); setWidth(e.nativeEvent.contentSize.width)}}
 					style={styles.rating}
 				/>
@@ -101,27 +110,24 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 			</EditItem>
 
 			<EditItem title='Favorite'>
-				<Pressable style={{alignSelf: 'flex-start'}} onPress={() => setFav(prev => !prev)}>
-					<Text style={[globalStyles.text, {padding: 10, borderWidth:1, }]}>
-						{fav? '❤️' : '🖤'}
-					</Text>
-				</Pressable>
+				<FavButton placeId={place.id} onPress={() => setFav(prev => !prev)} checkFav={fav} />
 			</EditItem>
 
 			<EditionMap coord={coord} setCoord={setCoord} />
 
 			<View style={styles.buttonsContainer}>
-				{(changed || place.fav != originalFav)? <Button title="Save" onPress={() => {
+				{changed &&
+				<Button title="Save" onPress={() => {
 					ctx.updatePlaces((prev: Place[]) => prev.map(item => item.id !== place.id? item : {
 						...item,
 						name: name,
 						coordinates: coord,
-						rating: rating? parseFloat(rating): undefined,
+						rating: (rating && rating != '.')? parseFloat(rating): undefined,
 						fav: fav
 					}));
 					navigation.goBack();
-				}}/> : null}
-				<Button title="Cancel" onPress={navigation.goBack}/>
+				}}/>}
+				<Button title={changed? "Cancel" : "Return"} onPress={navigation.goBack}/>
 			</View>
 		</Pressable>
 	);
