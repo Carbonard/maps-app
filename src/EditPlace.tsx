@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Pressable, Keyboard } from 'react-native';
 
-import { Place, Coordinates } from './AppTypes'
-import { EditPlaceProps, } from './AppTypes'
-import { getListCtx } from './AppContext';
-import { FavButton, maxRating } from './AppPlaceUtils';
-import { globalStyles } from './AppStyles';
-import { MapCircle, MapTemplate } from './AppMaps';
+import { Place, Coordinates } from './Types'
+import { EditPlaceProps, } from './Types'
+import { getListCtx } from './Context';
+import { FavButton, maxRating } from './PlaceUtils';
+import { globalStyles } from './Styles';
+import { MapCircle, MapTemplate } from './Maps';
 
 function EditItem({title, children}: {title: string, children: React.ReactNode}) {
 	return(

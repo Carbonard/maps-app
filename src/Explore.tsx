@@ -2,10 +2,10 @@ import { useState, useRef, use } from 'react';
 import { Text, View, Button, TextInput } from 'react-native';
 import {MapView, Camera, RasterSource, RasterLayer, ShapeSource, CircleLayer, UserLocation} from '@maplibre/maplibre-react-native';
 
-import { Place, Coordinates } from './AppTypes'
-import { getListCtx } from './AppContext';
-import { useLocationCtx } from './AppLocation';
-import { animationDuration, MapCircle, MapTemplate } from './AppMaps';
+import { Place, Coordinates } from './Types'
+import { getListCtx } from './Context';
+import { useLocationCtx } from './Location';
+import { animationDuration, MapCircle, MapTemplate } from './Maps';
 
 const c0 = {longitude: -3.663, latitude: 40.515}
 

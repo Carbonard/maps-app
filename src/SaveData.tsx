@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Place } from './AppTypes';
+import { Place } from './Types';
 import { useEffect, useState } from 'react';
 
 const saveLocally = async (places: Place[]) => {

@@ -3,13 +3,13 @@ import { StyleSheet, Text, View, Button, Pressable, FlatList, Modal, Alert } fro
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MapView, Camera, RasterSource, RasterLayer, ShapeSource, CircleLayer, UserLocation} from '@maplibre/maplibre-react-native';
 
-import { RootStackParamList, Place } from './AppTypes'
-import { MainListProps, PlaceProps, DisplayListProps,  } from './AppTypes'
-import { getListCtx } from './AppContext';
-import { EditPlace } from './AppEditPlace';
-import { FavButton, maxRating } from './AppPlaceUtils';
-import { globalStyles } from './AppStyles';
-import { MapCircle, MapTemplate } from './AppMaps';
+import { RootStackParamList, Place } from './Types'
+import { MainListProps, PlaceProps, DisplayListProps,  } from './Types'
+import { getListCtx } from './Context';
+import { EditPlace } from './EditPlace';
+import { FavButton, maxRating } from './PlaceUtils';
+import { globalStyles } from './Styles';
+import { MapCircle, MapTemplate } from './Maps';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

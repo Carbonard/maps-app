@@ -1,8 +1,8 @@
 import { ContextType, ReactNode } from "react";
 import { StyleSheet, FlatList, View, Text, Pressable } from "react-native";
-import { globalStyles } from "./AppStyles";
-import { exportBackup, exportBackupToExternalStorage, importBackup } from "./AppExternalData";
-import { getListCtx } from "./AppContext";
+import { globalStyles } from "./Styles";
+import { exportBackup, exportBackupToExternalStorage, importBackup } from "./ExternalData";
+import { getListCtx } from "./Context";
 
 type ConfigItemType = {
 	type: 'item' | 'title';

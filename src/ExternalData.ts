@@ -1,7 +1,7 @@
 import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
-import { Place, PlaceUpdater } from './AppTypes';
+import { Place, PlaceUpdater } from './Types';
 
 export const exportBackup = async (appData: Place[]) => {
 	try {

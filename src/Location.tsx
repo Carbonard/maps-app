@@ -1,7 +1,7 @@
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { createContext, useContext } from 'react';
-import { Coordinates } from './AppTypes';
+import { Coordinates } from './Types';
 
 export type LocationCtxType = {
 	userLocation: Coordinates | null,

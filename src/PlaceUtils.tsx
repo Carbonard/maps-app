@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from "react-native";
-import { getListCtx } from "./AppContext";
-import { Place } from "./AppTypes";
-import { globalStyles } from "./AppStyles";
+import { getListCtx } from "./Context";
+import { Place } from "./Types";
+import { globalStyles } from "./Styles";
 
 export const maxRating = 10;
 

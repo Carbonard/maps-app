@@ -1,16 +1,14 @@
-import { memo, useCallback } from 'react';
-import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from "@expo/vector-icons/Ionicons"
 
-import { ListCtx } from './AppContext';
-import { usePlaces } from './AppSaveData';
-import { LocationProvider } from './AppLocation';
-import { MapScreen } from './AppExplore';
-import { ListStack } from './AppList';
-import { ConfigurationScreen } from './AppConfiguration';
+import { ListCtx } from './Context';
+import { usePlaces } from './SaveData';
+import { LocationProvider } from './Location';
+import { MapScreen } from './Explore';
+import { ListStack } from './List';
+import { ConfigurationScreen } from './Configuration';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 

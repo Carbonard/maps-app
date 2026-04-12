@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Place, PlaceUpdater } from './AppTypes';
+import { Place, PlaceUpdater } from './Types';
 
 export type ListCtxType = {
 	placeList: Place[];

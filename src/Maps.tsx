@@ -1,6 +1,6 @@
 import { MapView, Camera, RasterSource, RasterLayer, ShapeSource, CircleLayer, UserLocation} from '@maplibre/maplibre-react-native';
 import { ReactNode, useState } from 'react';
-import { Coordinates } from './AppTypes';
+import { Coordinates } from './Types';
 import { Button, View, Text } from 'react-native';
 
 export const animationDuration = 1000;
