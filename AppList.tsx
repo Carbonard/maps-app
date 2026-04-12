@@ -144,7 +144,7 @@ function PlaceItem({place, updatePlaces, navigation} : PlaceProps) {
 	console.log("Rendering PlaceItem");
 
 	return(
-		<View style={styles.listItemPlaces}>
+		<View style={styles.listItem}>
 			<View style={{flexDirection: 'row', flex: 1}}>
 				<FavButton placeId={place.id}/>
 				<Text style={[styles.listText, {flexShrink:1}]}>{place.name}</Text>
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#fff',
 	},
-	listItemPlaces: {
+	listItem: {
 		backgroundColor: '#eee',
 		borderBottomColor: '#aaa',
 		borderBottomWidth: 1,

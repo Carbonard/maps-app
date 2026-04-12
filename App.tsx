@@ -8,8 +8,9 @@ import Ionicons from "@expo/vector-icons/Ionicons"
 import { ListCtx } from './AppContext';
 import { usePlaces } from './AppSaveData';
 import { LocationProvider } from './AppLocation';
-import { MapWindow } from './AppExplore';
+import { MapScreen } from './AppExplore';
 import { ListStack } from './AppList';
+import { ConfigurationScreen } from './AppConfiguration';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -42,7 +43,11 @@ function MainTabs() {
 				/>
 				<Tab.Screen name="Explore"
 					options={{ tabBarIcon: createIcon("compass-outline", "compass-sharp")}}
-					component={MapWindow}
+					component={MapScreen}
+				/>
+				<Tab.Screen name="Configuration"
+					options={{ tabBarIcon: createIcon("cog-outline", "cog-sharp")}}
+					component={ConfigurationScreen}
 				/>
 			</Tab.Navigator>
 		</ListCtx.Provider>
@@ -61,26 +66,26 @@ export default function App() {
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#305',
-		alignItems: 'stretch',
-		textAlign: 'center'
-	},
-	title: {
-		paddingTop:10,
-		alignSelf: 'center',
-		fontSize: 30,
-	},
-	text: {
-		color: '#000',
-	},
-	mainWindow: {
-		flex:1,
-		padding:20,
-		width: '100%',
-		alignSelf: 'center'
+// const styles = StyleSheet.create({
+// 	container: {
+// 		flex: 1,
+// 		backgroundColor: '#305',
+// 		alignItems: 'stretch',
+// 		textAlign: 'center'
+// 	},
+// 	title: {
+// 		paddingTop:10,
+// 		alignSelf: 'center',
+// 		fontSize: 30,
+// 	},
+// 	text: {
+// 		color: '#000',
+// 	},
+// 	mainWindow: {
+// 		flex:1,
+// 		padding:20,
+// 		width: '100%',
+// 		alignSelf: 'center'
 
-	},
-});
+// 	},
+// });

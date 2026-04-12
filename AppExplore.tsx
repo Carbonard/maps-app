@@ -9,7 +9,7 @@ import { animationDuration, MapCircle, MapTemplate } from './AppMaps';
 
 const c0 = {longitude: -3.663, latitude: 40.515}
 
-export function MapWindow() {
+export function MapScreen() {
 	console.log("Rendering MapWindow");
 
 	const updatePlaces = getListCtx().updatePlaces
