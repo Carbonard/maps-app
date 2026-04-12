@@ -36,14 +36,22 @@ function EditionMap({coord, setCoord}: {coord: Coordinates, setCoord: React.Disp
 	</View>
 	);
 }
-/*
-!=	undef	0
-''			
-'0'			
-*/
+
+function checkRating(input: string | undefined) {
+	if (!input)
+		return 1;
+	if (input.split('.').length > 2)
+		return 0;
+	if (input.includes('-') || input.includes(','))
+		return 0;
+	if (parseFloat(input) < 0 || parseFloat(input) > maxRating)
+		return 0;
+	return 1;
+}
+
 export function EditPlace({route, navigation}: EditPlaceProps) {
 	console.log("Rendering EditPlace");
-	const { place } = route.params;
+	const { place, mode } = route.params;
 
 	const ctx = getListCtx();
 	const [name, setName] = useState<string>(place.name);
@@ -55,23 +63,11 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 		|| (parseFloat(rating) != place.rating && rating != '')
 		|| (rating == '' && place.rating === 0)
 		|| fav !== place.fav
-	)
+	) 
 
 	const [width, setWidth] = useState(40);
 	const [height, setHeight] = useState(20);
 	const ratingRef = useRef<TextInput>(null);
-
-	function checkRating(input: string | undefined) {
-		if (!input)
-			return 1;
-		if (input.split('.').length > 2)
-			return 0;
-		if (input.includes('-') || input.includes(','))
-			return 0;
-		if (parseFloat(input) < 0 || parseFloat(input) > maxRating)
-			return 0;
-		return 1;
-	}
 
 	return (
 		<Pressable style={styles.editContainer} onPress={Keyboard.dismiss}>
@@ -116,18 +112,33 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 			<EditionMap coord={coord} setCoord={setCoord} />
 
 			<View style={styles.buttonsContainer}>
-				{changed &&
-				<Button title="Save" onPress={() => {
-					ctx.updatePlaces((prev: Place[]) => prev.map(item => item.id !== place.id? item : {
-						...item,
-						name: name,
-						coordinates: coord,
-						rating: (rating && rating != '.')? parseFloat(rating): undefined,
-						fav: fav
-					}));
-					navigation.goBack();
-				}}/>}
-				<Button title={changed? "Cancel" : "Return"} onPress={navigation.goBack}/>
+				<Button
+					title="Save"
+					disabled={coord === undefined || fav === undefined}
+					onPress={() => {
+						if (mode === 'edit')
+						{
+							ctx.updatePlaces(prev => prev.map(item => item.id !== place.id? item : {
+								...item,
+								name: name,
+								coordinates: coord,
+								rating: (rating && rating != '.')? parseFloat(rating): undefined,
+								fav: fav
+							}));
+						}
+						else if (mode === 'add')
+						{
+							place.name = name;
+							place.coordinates = coord;
+							if (fav !== undefined)
+								place.fav = fav;
+							if (rating && rating != '.')
+								place.rating = parseFloat(rating);
+							ctx.updatePlaces(prev => [...prev, place])
+						}
+						navigation.goBack();
+					}}/>
+				<Button title="Cancel" onPress={navigation.goBack}/>
 			</View>
 		</Pressable>
 	);

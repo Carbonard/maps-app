@@ -6,8 +6,8 @@ import Ionicons from "@expo/vector-icons/Ionicons"
 import { ListCtx } from './Context';
 import { usePlaces } from './SaveData';
 import { LocationProvider } from './Location';
-import { MapScreen } from './Explore';
-import { ListStack } from './List';
+import { ExploreStack, ExploreScreen } from './Explore';
+import { ListStack } from './ListMain';
 import { ConfigurationScreen } from './Configuration';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -33,18 +33,21 @@ function MainTabs() {
 				screenOptions={{
 					tabBarActiveTintColor: 'red',
 					tabBarInactiveTintColor: 'black',
-					// headerShown: false,
+					headerShown: false,
 				}}>
 				<Tab.Screen name="List of places"
-					options={{ tabBarIcon: createIcon("list-outline", "list-sharp"), headerShown: false }}
+					options={{ tabBarIcon: createIcon("list-outline", "list-sharp")}}
 					component={ListStack}
 				/>
 				<Tab.Screen name="Explore"
 					options={{ tabBarIcon: createIcon("compass-outline", "compass-sharp")}}
-					component={MapScreen}
+					component={ExploreStack}
 				/>
 				<Tab.Screen name="Configuration"
-					options={{ tabBarIcon: createIcon("cog-outline", "cog-sharp")}}
+					options={{
+						tabBarIcon: createIcon("cog-outline", "cog-sharp"),
+						headerShown: true,
+					}}
 					component={ConfigurationScreen}
 				/>
 			</Tab.Navigator>

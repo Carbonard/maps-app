@@ -32,11 +32,13 @@ export interface PlaceListProps {
 // PROPS
 
 export type RootStackParamList = {
-  MainList: undefined;
-  EditPlace: { place: Place };
-  DisplayList: undefined;
+	MainList: undefined;
+	EditPlace: { place: Place, mode: 'edit' | 'add' };
+	DisplayList: undefined;
+	Explore: undefined;
 };
 
 export type MainListProps = NativeStackScreenProps<RootStackParamList, 'MainList'>;// & {placesList: Place[]; updatePlaces: PlaceSetter};
 export type EditPlaceProps = NativeStackScreenProps<RootStackParamList, 'EditPlace'>;// & { place: Place; updatePlaces: PlaceSetter };
 export type DisplayListProps = NativeStackScreenProps<RootStackParamList, 'DisplayList'>;// & { placesList: Place[] };
+export type ExploreScreenProps = NativeStackScreenProps<RootStackParamList, 'Explore'>;// & { placesList: Place[] };
