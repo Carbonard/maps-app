@@ -1,119 +1,57 @@
-import { useState, useCallback } from 'react';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
-import MapView, { Marker } from 'react-native-maps'
+import { memo, useCallback } from 'react';
+import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from "@expo/vector-icons/Ionicons"
 
-import { Place, Coordinates, PlaceListProps } from './AppTypes'
-import { ListStack } from './AppList'
 import { ListCtx } from './AppContext';
 import { usePlaces } from './AppSaveData';
-
+import { LocationProvider } from './AppLocation';
+import { MapWindow } from './AppExplore';
+import { ListStack } from './AppList';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 const Tab = createBottomTabNavigator();
 
-function MapWindow({placesList, updatePlaces}: PlaceListProps) {
-	const [userText, setText] = useState<string>('');
-	const [coord, setCoord] = useState<Coordinates | undefined | void>();
-	const [errorMsg, setError] = useState<string>('');
-	const debug = true;
-
-	return(<>
-		<View style={{alignItems: 'center', marginBottom: 25}}>
-		<TextInput 
-			placeholder='Type some place'
-			value={userText}
-			onChangeText={setText}
-			style={{borderWidth:1, margin:10, width: 200, borderColor: 'red', color: 'green'}}
-		/>
-		<Text style={{color:'red'}}>
-			{errorMsg? errorMsg : null}
-		</Text>
-		<Button title='Add place' onPress={() => {
-			if (debug){
-				updatePlaces((prev: Place[]) => [...prev, {id: Math.random().toString(), coordinates: {latitude: 40.515, longitude: -3.663}, name: '42 Madird', fav: false}]);
-				return;
-			}
-			if (!userText || userText == '')
-			{
-				setError('Insert a name!');
-				return;
-			}
-			if (!coord)
-			{
-				setError('Select a point on the map!');
-				return;
-			}
-			updatePlaces((prev: Place[]) => [...prev, {id: Math.random().toString(), coordinates: coord, name: userText, fav: false}]);
-			setText('');
-			setCoord();
-			setError('');
-			}} />
-	</View>
-	<View style={{flex:1}}>
-		<MapView
-			style={{flex:1}}
-			initialRegion={{
-			latitude: 40.4168,
-			longitude: -3.7038,
-			latitudeDelta: 0.05,
-			longitudeDelta: 0.05,
-			}}
-			showsUserLocation={true}
-			onPress={(e) => {
-				setCoord(e.nativeEvent.coordinate);
-			}}
-		>
-			{coord ? <Marker coordinate={{latitude: coord.latitude, longitude: coord.longitude}} title='XXX' /> : null}
-		</MapView>
-	</View>
-		</>)
-}
-
 function MainTabs() {
+	console.log("Rendering MainTabs");
 	const {placesList, updatePlaces} = usePlaces();
 
 	const createIcon = (Name: IconName, focusName: IconName) => (
-		useCallback(({ focused, color, size }: {focused: boolean, color: string, size: number}) =>
+		({ focused, color, size }: {focused: boolean, color: string, size: number}) =>
 					<Ionicons
 						name={focused? focusName : Name}
 						size={size}
 						color={color}
-					/>, [Name, focusName]));
-	const displayMapWindow = useCallback(
-		(props: any) => <MapWindow {...props} placesList={placesList} updatePlaces={updatePlaces} />,
-		[ placesList, updatePlaces ]
-	);
-	const displayListStack = useCallback(
-		(props: any) => <ListStack {...props} placesList={placesList} updatePlaces={updatePlaces} />,
-		[ placesList, updatePlaces ]
-	);
+					/>);
 
 	return(
+		<LocationProvider>
 		<ListCtx.Provider value={{placeList: placesList, updatePlaces: updatePlaces}}>
-			<Tab.Navigator initialRouteName="Explorer"
+			<Tab.Navigator initialRouteName="Explore"
 				screenOptions={{
 					tabBarActiveTintColor: 'red',
 					tabBarInactiveTintColor: 'black',
+					// headerShown: false,
 				}}>
 				<Tab.Screen name="List of places"
-					options={{ tabBarIcon: createIcon("list-outline", "list-sharp") }}
-					children={displayListStack}
+					options={{ tabBarIcon: createIcon("list-outline", "list-sharp"), headerShown: false }}
+					component={ListStack}
 				/>
-				<Tab.Screen name="Explorer"
-					options={{ tabBarIcon: createIcon("compass-outline", "compass-sharp") }}
-					children={displayMapWindow}
+				<Tab.Screen name="Explore"
+					options={{ tabBarIcon: createIcon("compass-outline", "compass-sharp")}}
+					component={MapWindow}
 				/>
 			</Tab.Navigator>
 		</ListCtx.Provider>
+		</LocationProvider>
 	);
 }
 
 export default function App() {
+	console.log("Rendering default");
 	return (
 		<SafeAreaProvider>
 			<NavigationContainer>

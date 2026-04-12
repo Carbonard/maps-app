@@ -11,6 +11,6 @@ export const ListCtx = createContext<ListCtxType>(null!);
 export function getListCtx() {
 	const ctx = useContext(ListCtx);
 	if (!ctx)
-		alert("Context Error");
+		alert("Places Context Error");
 	return (ctx);
 }

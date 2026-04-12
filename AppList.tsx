@@ -1,31 +1,100 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Pressable, FlatList, Modal, Alert } from 'react-native';
-import MapView, { Marker } from 'react-native-maps'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { MapView, Camera, RasterSource, RasterLayer, ShapeSource, CircleLayer, UserLocation} from '@maplibre/maplibre-react-native';
 
 import { RootStackParamList, Place } from './AppTypes'
-import {MainListProps, PlaceProps, DisplayListProps,  } from './AppTypes'
+import { MainListProps, PlaceProps, DisplayListProps,  } from './AppTypes'
 import { getListCtx } from './AppContext';
 import { EditPlace } from './AppEditPlace';
 import { FavButton, maxRating } from './AppPlaceUtils';
 import { globalStyles } from './AppStyles';
+import { MapCircle, MapTemplate } from './AppMaps';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+type Bounds = {
+	ne: number[];
+	sw: number[];
+}
+
 function DisplayList({route, navigation}: DisplayListProps) {
+	console.log("Rendering DisplayList");
 	const placesList = getListCtx().placeList;
+
+	const cameraRef = useRef<any>(null);
+	const [mapReady, setMapReady] = useState<boolean>(false)
+	// const [bounds, setBounds] = useState<Bounds | undefined>(undefined);
+
+	const calculateBounds = () => {
+		if (placesList.length == 0) return undefined;
+		
+		let minLat = placesList[0].coordinates.latitude;
+		let maxLat = placesList[0].coordinates.latitude;
+		let minLng = placesList[0].coordinates.longitude;
+		let maxLng = placesList[0].coordinates.longitude;
+		
+		placesList.forEach(place => {
+			minLat = Math.min(minLat, place.coordinates.latitude);
+			maxLat = Math.max(maxLat, place.coordinates.latitude);
+			minLng = Math.min(minLng, place.coordinates.longitude);
+			maxLng = Math.max(maxLng, place.coordinates.longitude);
+		});
+		
+		return {
+			ne: [maxLng, maxLat],
+			sw: [minLng, minLat]
+		};
+	};
+	
+	const setCamera = () => {
+		if (cameraRef.current && placesList.length > 0) {
+			const bounds = calculateBounds();
+			if (bounds) {
+				cameraRef.current.fitBounds(
+					bounds.ne,
+					bounds.sw,
+					{
+						padding: 50, // Padding in pixels
+						animated: true,
+						duration: 1000
+					}
+				);
+			}
+		}
+	};
+	
+	if (placesList.length == 0) {
+		return (
+			<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+				<Text>No places to display</Text>
+			</View>
+		);
+	}
+	
 	return(
-	<View style={{flex:1}}>
-	<MapView style={{flex:1}}>
-		{placesList.map((item: Place) => (
-			<Marker key={item.id} title={item.name} coordinate={item.coordinates} />
-		))}
-	</MapView>
-	</View>
+		<View style={{flex: 1}}>
+			<MapTemplate
+				onMapLoaded={setCamera}
+				zoomLevel={15}
+				centerCoordinate={placesList[0].coordinates}
+				cameraRef={cameraRef}
+			>
+				
+				{placesList.map((place: Place) => (
+					<MapCircle
+						id={place.id}
+						key={place.id}
+						center={place.coordinates}
+					/>
+				))}
+			</MapTemplate>
+		</View>
 	);
 }
 
 function DropdownButton({ place, navigation } : PlaceProps) {
+	console.log("Rendering DropdownButton");
 	const updatePlaces = getListCtx().updatePlaces;
 
 	const [isOpen, setOpen] = useState(false);
@@ -68,7 +137,9 @@ function DropdownButton({ place, navigation } : PlaceProps) {
 	</>);
 }
 
+// const PlaceItem = memo(
 function PlaceItem({place, updatePlaces, navigation} : PlaceProps) {
+	console.log("Rendering PlaceItem");
 
 	return(
 		<View style={styles.listItemPlaces}>
@@ -85,6 +156,7 @@ function PlaceItem({place, updatePlaces, navigation} : PlaceProps) {
 }
 
 function ListWindow({route, navigation} : MainListProps) {
+	console.log("Rendering ListWindow");
 	const ctx = getListCtx();
 
 	return (<View style={styles.listWindow}>
@@ -96,7 +168,8 @@ function ListWindow({route, navigation} : MainListProps) {
 					place={item}
 					updatePlaces={ctx.updatePlaces}
 					navigation={navigation}
-				/>)}
+				/>
+			)}
 		/>
 		<Button onPress={() => navigation.navigate('DisplayList')} title='View Map' />
 		</View>
@@ -104,12 +177,13 @@ function ListWindow({route, navigation} : MainListProps) {
 }
 
 export function ListStack() {
+	console.log("Rendering ListStack");
 	
 	return(
-		<Stack.Navigator initialRouteName='MainList'>
-			<Stack.Screen name="MainList" options={{headerShown: false}} component={ListWindow} />
-			<Stack.Screen name="EditPlace" options={{headerShown: false}} component={EditPlace} />
-			<Stack.Screen name="DisplayList" options={{headerShown: false}} component={DisplayList} />
+		<Stack.Navigator initialRouteName='MainList' screenOptions={{headerShown: true}}>
+			<Stack.Screen name="MainList" options={{title: 'My places'}} component={ListWindow} />
+			<Stack.Screen name="EditPlace" options={{title: 'Edit places'}} component={EditPlace} />
+			<Stack.Screen name="DisplayList" options={{title: 'My places'}} component={DisplayList} />
 		</Stack.Navigator>
 	);
 }

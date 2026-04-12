@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Pressable, Keyboard } from 'react-native';
-import MapView, { Marker } from 'react-native-maps'
 
 import { Place, Coordinates } from './AppTypes'
 import { EditPlaceProps, } from './AppTypes'
 import { getListCtx } from './AppContext';
 import { maxRating } from './AppPlaceUtils';
 import { globalStyles } from './AppStyles';
+import { MapCircle, MapTemplate } from './AppMaps';
 
 function EditItem({title, children}: {title: string, children: React.ReactNode}) {
 	return(
@@ -19,16 +19,33 @@ function EditItem({title, children}: {title: string, children: React.ReactNode})
 	);
 }
 
+function EditionMap({coord, setCoord}: {coord: Coordinates, setCoord: React.Dispatch<React.SetStateAction<Coordinates>>}) {
+	console.log("Rendering EditionMap")
+
+	return(
+	<View style={{flex: 1, alignSelf: 'stretch', margin: 25, borderWidth: 1}}>
+		<MapTemplate
+			onPress={(e: any) => {const [longitude, latitude] = e.geometry.coordinates; setCoord({latitude: latitude, longitude: longitude})}}
+			centerCoordinate={coord}
+			zoomLevel={15}
+			displayUser={true}
+		>
+			<MapCircle center={coord}/>
+		</MapTemplate>
+	</View>
+	);
+}
+
 export function EditPlace({route, navigation}: EditPlaceProps) {
+	console.log("Rendering EditPlace");
 	const { place } = route.params;
 
 	const ctx = getListCtx();
-	// const [changed, setChanged] = useState<boolean>(false);
 	const [name, setName] = useState<string>(place.name);
 	const [coord, setCoord] = useState<Coordinates>(place.coordinates);
 	const [rating, setRating] = useState<string|undefined>(place.rating != undefined? place.rating.toString() : '');
 	const [fav, setFav] = useState<boolean>(place.fav);
-	const changed = (name != place.name || coord != place.coordinates || rating != place.rating || fav != place.fav)
+	const changed = (name != place.name || coord != place.coordinates || rating != place.rating || fav !== place.fav)
 
 	const originalFav = place.fav;
 	const [width, setWidth] = useState(40);
@@ -91,22 +108,7 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 				</Pressable>
 			</EditItem>
 
-			<View style={styles.mapContainer}>
-				<MapView
-					style={{flex:1}}
-					initialRegion={{
-					latitude: coord.latitude,
-					longitude: coord.longitude,
-					latitudeDelta: 0.05,
-					longitudeDelta: 0.05,
-					}}
-					showsUserLocation={true}
-					onPress={(e) => setCoord(e.nativeEvent.coordinate)}
-				>
-					{coord ? <Marker coordinate={{latitude: coord.latitude, longitude: coord.longitude}} title={place.name} /> : null}
-				</MapView>
-				<Text>coordinates: ({coord.latitude},{coord.longitude})</Text>
-			</View>
+			<EditionMap coord={coord} setCoord={setCoord} />
 
 			<View style={styles.buttonsContainer}>
 				{(changed || place.fav != originalFav)? <Button title="Save" onPress={() => {
