@@ -19,8 +19,9 @@ interface ConfigurationItemProps {
 
 function ConfigurationItem({item}: ConfigurationItemProps) {
 	const {globalStyles} = useStyle();
+
 	return(
-		<Pressable style={styles.listItem} onPress={item.onPress}>
+		<Pressable style={[globalStyles.listItemContainer, styles.listItem]} onPress={item.onPress}>
 			<Text style ={[globalStyles.listText, styles.listText]}>
 				{item.title}
 			</Text>
@@ -32,7 +33,7 @@ export let currentTheme = 0;
 
 export function ConfigurationScreen() {
 	const ctxList = UseListCtx()
-	const {setTheme} = useStyle();
+	const {globalStyles, setTheme} = useStyle();
 	const configOptions: ConfigItemType[] = [
 		{
 			type: 'title',
@@ -64,7 +65,7 @@ export function ConfigurationScreen() {
 		},
 	]
 	return(
-		<View style={styles.listWindow}>
+		<View style={[styles.listWindow, globalStyles.screenContainer]}>
 			<FlatList
 				data={configOptions}
 				keyExtractor={(item, index) => index.toString()}
@@ -83,12 +84,11 @@ export function ConfigurationScreen() {
 const styles = StyleSheet.create({
 	listWindow: {
 		flex: 1,
-		backgroundColor: '#fff',
 	},
 	listItem: {
-		backgroundColor: '#eee',
-		borderBottomColor: '#aaa',
-		borderBottomWidth: 1,
+		// backgroundColor: '#eee',
+		// borderBottomColor: '#aaa',
+		// borderBottomWidth: 1,
 		// padding: 20,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
@@ -104,21 +104,4 @@ const styles = StyleSheet.create({
 	listText: {
 		padding: 10,
 	},
-	// dropdownContainer: {
-	// 	backgroundColor: '#fff',
-	// 	position: 'absolute',
-	// 	right: 10,
-	// 	top: 40,
-	// 	// padding: 10,
-	// 	flexDirection: 'column',
-	// 	zIndex: 2,
-	// },
-	// dropdownButton: {
-	// 	borderWidth: 1,
-	// 	borderColor: '#aaa',
-	// 	padding:10,
-	// },
-	// dropdownText: {
-	// 	fontSize: 20,
-	// },
 })

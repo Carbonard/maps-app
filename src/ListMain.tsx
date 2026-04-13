@@ -9,6 +9,7 @@ import { EditPlace } from './EditPlace';
 import { FavButton, maxRating } from './PlaceUtils';
 import { DisplayList } from './ListDisplay';
 import { useStyle } from './Themes';
+import { Tappable } from './Buttons';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -92,7 +93,7 @@ function ListWindow({route, navigation} : MainListProps) {
 				/>
 			)}
 		/>
-		<Button onPress={() => navigation.navigate('DisplayList')} title='View Map' />
+		<Tappable onPress={() => navigation.navigate('DisplayList')} title='View Map' style={{margin: 20, width: 'auto', alignSelf: 'center'}} />
 		</View>
 	)
 }

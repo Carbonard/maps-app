@@ -2,6 +2,7 @@ import { MapView, Camera, RasterSource, RasterLayer, ShapeSource, CircleLayer, U
 import { ReactNode, useState } from 'react';
 import { Coordinates } from './Types';
 import { Button, View, Text } from 'react-native';
+import { Tappable } from './Buttons';
 
 export const animationDuration = 1000;
 
@@ -117,9 +118,13 @@ export function MapTemplate ({
 		</MapView>
 		{/* <Text>{currentMode}</Text> */}
 		<View>
-			<Button title='Map Mode' onPress={() => {
-				setCurrentMode(prev => modeArray[(modeArray.indexOf(prev)+1)%modeArray.length]);
-			}} />
+			<Tappable
+				title='Switch Map'
+				onPress={() => {
+					setCurrentMode(prev => modeArray[(modeArray.indexOf(prev)+1)%modeArray.length]);
+				}}
+				style={{alignSelf: 'center', margin: 3}}
+			/>
 		</View>
 		</>
 	);

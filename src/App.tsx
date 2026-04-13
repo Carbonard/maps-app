@@ -11,6 +11,7 @@ import { ListStack } from './ListMain';
 import { ConfigurationScreen, currentTheme } from './Configuration';
 import { themes } from './Styles';
 import { StylesProvider, useStyle } from './Themes';
+import { memo } from 'react';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -32,12 +33,14 @@ function MainTabs() {
 	return(
 		<LocationProvider>
 		<ListCtx.Provider value={{placeList: placesList, updatePlaces: updatePlaces}}>
-			<Tab.Navigator initialRouteName="Explore"
+			<Tab.Navigator initialRouteName="List of places"
 				screenOptions={{
-					tabBarActiveTintColor: themes[currentTheme].iconFocusColor,
-					tabBarInactiveTintColor: globalStyles.title.color,
+					tabBarActiveTintColor: globalStyles.icon.focusColor,
+					tabBarInactiveTintColor: globalStyles.icon.noFocusColor,
 					headerShown: false,
 					tabBarStyle: globalStyles.titleContainer,
+					headerTitleStyle: globalStyles.title,
+					headerStyle: globalStyles.titleContainer,
 				}}>
 				<Tab.Screen name="List of places"
 					options={{ tabBarIcon: createIcon("list-outline", "list-sharp")}}

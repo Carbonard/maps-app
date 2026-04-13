@@ -8,6 +8,7 @@ import { useLocationCtx } from './Location';
 import { animationDuration, MapCircle, MapTemplate } from './Maps';
 import { EditPlace } from './EditPlace';
 import { useStyle } from './Themes';
+import { Tappable } from './Buttons';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -50,7 +51,7 @@ export function ExploreScreen({navigation}: ExploreScreenProps) {
 			</Text>}
 		</View>
 		<View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10}}>
-			<Button title='Save place' onPress={() => {
+			<Tappable title='Save place' onPress={() => {
 				if (!coord)
 				{
 					setError('Select a point on the map!');
@@ -66,7 +67,7 @@ export function ExploreScreen({navigation}: ExploreScreenProps) {
 				setCoord(undefined);
 				setError('');
 			}}/>
-			<Button title='Find me' onPress={() => goToUser(14)} />
+			<Tappable title='Find me' onPress={() => goToUser(14)} />
 		</View>
 	</View>
 		</>)

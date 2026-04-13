@@ -1,18 +1,19 @@
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Pressable, Keyboard } from 'react-native';
 
-import { Place, Coordinates } from './Types'
+import { Coordinates } from './Types'
 import { EditPlaceProps, } from './Types'
 import { UseListCtx } from './Context';
 import { FavButton, maxRating } from './PlaceUtils';
 import { MapCircle, MapTemplate } from './Maps';
 import { useStyle } from './Themes';
+import { Tappable } from './Buttons';
 
-function EditItem({title, children}: {title: string, children: React.ReactNode}) {
+function EditItem({title, children, style}: {title: string, children: React.ReactNode, style?: any}) {
 	const {globalStyles} = useStyle();
 
 	return(
-		<View style={styles.editItemContainer}>
+		<View style={[styles.editItemContainer, style]}>
 			<Text style={globalStyles.text}>{title}</Text>
 			<View style={{flex:1}}>
 				{children}
@@ -25,7 +26,7 @@ function EditionMap({coord, setCoord}: {coord: Coordinates, setCoord: React.Disp
 	console.log("Rendering EditionMap")
 
 	return(
-	<View style={{flex: 1, alignSelf: 'stretch', margin: 25, borderWidth: 1}}>
+	<View style={{flex: 1, alignSelf: 'stretch', marginHorizontal: 25}}>
 		<MapTemplate
 			onPress={(e: any) => {const [longitude, latitude] = e.geometry.coordinates; setCoord({latitude: latitude, longitude: longitude})}}
 			centerCoordinate={coord}
@@ -108,14 +109,14 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 				</View>
 			</EditItem>
 
-			<EditItem title='Favorite'>
+			<EditItem title='Favorite' style={{marginBottom: 10}}>
 				<FavButton placeId={place.id} onPress={() => setFav(prev => !prev)} checkFav={fav} />
 			</EditItem>
 
 			<EditionMap coord={coord} setCoord={setCoord} />
 
 			<View style={styles.buttonsContainer}>
-				<Button
+				<Tappable
 					title="Save"
 					disabled={!changed || coord === undefined || fav === undefined}
 					onPress={() => {
@@ -141,7 +142,7 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 						}
 						navigation.goBack();
 					}}/>
-				<Button title="Cancel" onPress={navigation.goBack}/>
+				<Tappable title="Cancel" onPress={navigation.goBack}/>
 			</View>
 		</Pressable>
 	);
