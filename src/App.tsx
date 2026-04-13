@@ -8,7 +8,9 @@ import { usePlaces } from './SaveData';
 import { LocationProvider } from './Location';
 import { ExploreStack, ExploreScreen } from './Explore';
 import { ListStack } from './ListMain';
-import { ConfigurationScreen } from './Configuration';
+import { ConfigurationScreen, currentTheme } from './Configuration';
+import { themes } from './Styles';
+import { StylesProvider, useStyle } from './Themes';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -17,6 +19,7 @@ const Tab = createBottomTabNavigator();
 function MainTabs() {
 	console.log("Rendering MainTabs");
 	const {placesList, updatePlaces} = usePlaces();
+	const {globalStyles} = useStyle();
 
 	const createIcon = (Name: IconName, focusName: IconName) => (
 		({ focused, color, size }: {focused: boolean, color: string, size: number}) =>
@@ -31,9 +34,10 @@ function MainTabs() {
 		<ListCtx.Provider value={{placeList: placesList, updatePlaces: updatePlaces}}>
 			<Tab.Navigator initialRouteName="Explore"
 				screenOptions={{
-					tabBarActiveTintColor: 'red',
-					tabBarInactiveTintColor: 'black',
+					tabBarActiveTintColor: themes[currentTheme].iconFocusColor,
+					tabBarInactiveTintColor: globalStyles.title.color,
 					headerShown: false,
+					tabBarStyle: globalStyles.titleContainer,
 				}}>
 				<Tab.Screen name="List of places"
 					options={{ tabBarIcon: createIcon("list-outline", "list-sharp")}}
@@ -60,9 +64,11 @@ export default function App() {
 	console.log("Rendering default");
 	return (
 		<SafeAreaProvider>
+		<StylesProvider>
 			<NavigationContainer>
 				<MainTabs />
 			</NavigationContainer>
+		</StylesProvider>
 		</SafeAreaProvider>
 	);
 }

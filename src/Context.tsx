@@ -8,7 +8,7 @@ export type ListCtxType = {
 
 export const ListCtx = createContext<ListCtxType>(null!);
 
-export function getListCtx() {
+export function UseListCtx() {
 	const ctx = useContext(ListCtx);
 	if (!ctx)
 		alert("Places Context Error");

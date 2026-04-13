@@ -1,12 +1,13 @@
 import { Pressable, Text, View } from "react-native";
-import { getListCtx } from "./Context";
+import { UseListCtx } from "./Context";
 import { Place } from "./Types";
-import { globalStyles } from "./Styles";
+import { useStyle } from "./Themes";
 
 export const maxRating = 10;
 
 export function FavButton({placeId, onPress, checkFav}: {placeId: string, onPress?: () => void, checkFav?: boolean}) {
-	const ctx = getListCtx();
+	const {globalStyles} = useStyle();
+	const ctx = UseListCtx();
 	const place = ctx.placeList.filter(p => p.id === placeId)[0];
 
 	if (onPress === undefined)

@@ -1,8 +1,9 @@
-import { ContextType, ReactNode } from "react";
+import { ReactNode } from "react";
 import { StyleSheet, FlatList, View, Text, Pressable } from "react-native";
-import { globalStyles } from "./Styles";
 import { exportBackup, exportBackupToExternalStorage, importBackup } from "./ExternalData";
-import { getListCtx } from "./Context";
+import { UseListCtx } from "./Context";
+import { useStyle } from "./Themes";
+import { themesLength } from "./Styles";
 
 type ConfigItemType = {
 	type: 'item' | 'title';
@@ -17,18 +18,31 @@ interface ConfigurationItemProps {
 }
 
 function ConfigurationItem({item}: ConfigurationItemProps) {
+	const {globalStyles} = useStyle();
 	return(
 		<Pressable style={styles.listItem} onPress={item.onPress}>
-			<Text style ={styles.listText}>
+			<Text style ={[globalStyles.listText, styles.listText]}>
 				{item.title}
 			</Text>
 		</Pressable>
 	);
 }
 
+export let currentTheme = 0;
+
 export function ConfigurationScreen() {
-	const ctxList = getListCtx()
+	const ctxList = UseListCtx()
+	const {setTheme} = useStyle();
 	const configOptions: ConfigItemType[] = [
+		{
+			type: 'title',
+			title: 'Appearance',
+		},
+		{
+			type: 'item',
+			title: "Change theme",
+			onPress: () => setTheme(prev => (prev+1)%themesLength),
+		},
 		{
 			type: 'title',
 			title: 'Backup',
@@ -88,7 +102,6 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 	},
 	listText: {
-		...globalStyles.text,
 		padding: 10,
 	},
 	// dropdownContainer: {

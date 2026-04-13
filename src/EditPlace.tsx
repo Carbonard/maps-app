@@ -3,15 +3,17 @@ import { StyleSheet, Text, View, Button, TextInput, Pressable, Keyboard } from '
 
 import { Place, Coordinates } from './Types'
 import { EditPlaceProps, } from './Types'
-import { getListCtx } from './Context';
+import { UseListCtx } from './Context';
 import { FavButton, maxRating } from './PlaceUtils';
-import { globalStyles } from './Styles';
 import { MapCircle, MapTemplate } from './Maps';
+import { useStyle } from './Themes';
 
 function EditItem({title, children}: {title: string, children: React.ReactNode}) {
+	const {globalStyles} = useStyle();
+
 	return(
 		<View style={styles.editItemContainer}>
-			<Text>{title}</Text>
+			<Text style={globalStyles.text}>{title}</Text>
 			<View style={{flex:1}}>
 				{children}
 			</View>
@@ -51,9 +53,10 @@ function checkRating(input: string | undefined) {
 
 export function EditPlace({route, navigation}: EditPlaceProps) {
 	console.log("Rendering EditPlace");
+	const { globalStyles } = useStyle();
 	const { place, mode } = route.params;
 
-	const ctx = getListCtx();
+	const ctx = UseListCtx();
 	const [name, setName] = useState<string>(place.name);
 	const [coord, setCoord] = useState<Coordinates>(place.coordinates);
 	const [rating, setRating] = useState<string>(place.rating != undefined? place.rating.toString() : '');
@@ -70,12 +73,12 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 	const ratingRef = useRef<TextInput>(null);
 
 	return (
-		<Pressable style={styles.editContainer} onPress={Keyboard.dismiss}>
+		<Pressable style={[globalStyles.screenContainer, styles.editContainer]} onPress={Keyboard.dismiss}>
 			<EditItem title='Name'>
 				<TextInput
 					value={name}
 					onChangeText={text => setName(text)}
-					style={styles.name}
+					style={[globalStyles.textBox, styles.name]}
 					multiline
 				/>
 			</EditItem>
@@ -92,7 +95,7 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 						rating = rating?.replace(',', '.');
 						checkRating(rating) && setRating(rating)}}
 					onContentSizeChange={(e) => {setHeight(e.nativeEvent.contentSize.height); setWidth(e.nativeEvent.contentSize.width)}}
-					style={styles.rating}
+					style={[globalStyles.text, globalStyles.textBox, styles.rating]}
 				/>
 				<Text style={[globalStyles.text, rating? null : {color: '#ccc'}]}
 					onPress={() => {
@@ -114,7 +117,7 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 			<View style={styles.buttonsContainer}>
 				<Button
 					title="Save"
-					disabled={coord === undefined || fav === undefined}
+					disabled={!changed || coord === undefined || fav === undefined}
 					onPress={() => {
 						if (mode === 'edit')
 						{
@@ -156,8 +159,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 20
 	},
 	name: {
-		borderWidth: 1,
-		borderColor: '#ddd',
 		margin: 10,
 		width: 'auto',
 		minWidth: 150
@@ -167,10 +168,10 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	rating: {
-		...globalStyles.text,
 		borderWidth: 1,
-		borderColor: '#eee',
+		borderColor: 'rgba(0,0,0,0.1)',
 		marginLeft: 10,
+		// height: 30,
 		// width: 60,
 		textAlign: 'center'
 	},

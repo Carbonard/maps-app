@@ -4,17 +4,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from './Types'
 import { MainListProps, PlaceProps,  } from './Types'
-import { getListCtx } from './Context';
+import { UseListCtx } from './Context';
 import { EditPlace } from './EditPlace';
 import { FavButton, maxRating } from './PlaceUtils';
-import { globalStyles } from './Styles';
 import { DisplayList } from './ListDisplay';
+import { useStyle } from './Themes';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function DropdownButton({ place, navigation } : PlaceProps) {
 	console.log("Rendering DropdownButton");
-	const updatePlaces = getListCtx().updatePlaces;
+	const updatePlaces = UseListCtx().updatePlaces;
 
 	const [isOpen, setOpen] = useState(false);
 	const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -59,15 +59,16 @@ function DropdownButton({ place, navigation } : PlaceProps) {
 // const PlaceItem = memo(
 function PlaceItem({place, updatePlaces, navigation} : PlaceProps) {
 	console.log("Rendering PlaceItem");
+	const {globalStyles} = useStyle();
 
 	return(
-		<View style={styles.listItem}>
-			<View style={{flexDirection: 'row', flex: 1}}>
+		<View style={[globalStyles.screenContainer, styles.listItem]}>
+			<View style={[globalStyles.listItemContainer, {flexDirection: 'row', flex: 1}]}>
 				<FavButton placeId={place.id}/>
-				<Text style={[styles.listText, {flexShrink:1}]}>{place.name}</Text>
+				<Text style={[[globalStyles.listText, styles.listText], {flexShrink:1}]}>{place.name}</Text>
 			</View>
-			<View style={{flexDirection: 'row'}}>
-				<Text style={styles.listText}>{place.rating != undefined? place.rating + '/' + maxRating : null}</Text>
+			<View style={[globalStyles.listItemContainer, {flexDirection: 'row'}]}>
+				<Text style={[globalStyles.listText, styles.listText]}>{place.rating != undefined? place.rating + '/' + maxRating : null}</Text>
 				<DropdownButton place={place} updatePlaces={updatePlaces} navigation={navigation} />
 			</View>
 		</View>
@@ -76,9 +77,10 @@ function PlaceItem({place, updatePlaces, navigation} : PlaceProps) {
 
 function ListWindow({route, navigation} : MainListProps) {
 	console.log("Rendering ListWindow");
-	const ctx = getListCtx();
+	const {globalStyles} = useStyle();
+	const ctx = UseListCtx();
 
-	return (<View style={styles.listWindow}>
+	return (<View style={[globalStyles.screenContainer, styles.listWindow]}>
 		<FlatList
 			data={ctx.placeList}
 			keyExtractor={(item) => item.id}
@@ -97,9 +99,14 @@ function ListWindow({route, navigation} : MainListProps) {
 
 export function ListStack() {
 	console.log("Rendering ListStack");
+	const {globalStyles} = useStyle();
 	
 	return(
-		<Stack.Navigator initialRouteName='MainList' screenOptions={{headerShown: true}}>
+		<Stack.Navigator initialRouteName='MainList' screenOptions={{
+			headerShown: true,
+			headerTitleStyle: globalStyles.title,
+			headerStyle: globalStyles.titleContainer,
+		}} >
 			<Stack.Screen name="MainList" options={{title: 'My places'}} component={ListWindow} />
 			<Stack.Screen name="EditPlace" options={{title: 'Edit places'}} component={EditPlace} />
 			<Stack.Screen name="DisplayList" options={{title: 'My places'}} component={DisplayList} />
@@ -110,19 +117,13 @@ export function ListStack() {
 const styles = StyleSheet.create({
 	listWindow: {
 		flex: 1,
-		backgroundColor: '#fff',
 	},
 	listItem: {
-		backgroundColor: '#eee',
-		borderBottomColor: '#aaa',
-		borderBottomWidth: 1,
-		// padding: 20,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
 	},
 	listText: {
-		...globalStyles.text,
 		padding: 10,
 	},
 	dropdownContainer: {

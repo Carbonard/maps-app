@@ -3,10 +3,11 @@ import { Text, View, Button, TextInput } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Place, Coordinates, RootStackParamList, ExploreScreenProps } from './Types'
-import { getListCtx } from './Context';
+import { UseListCtx } from './Context';
 import { useLocationCtx } from './Location';
 import { animationDuration, MapCircle, MapTemplate } from './Maps';
 import { EditPlace } from './EditPlace';
+import { useStyle } from './Themes';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -15,11 +16,7 @@ const c0 = {longitude: -3.663, latitude: 40.515}
 export function ExploreScreen({navigation}: ExploreScreenProps) {
 	console.log("Rendering MapWindow");
 
-	const updatePlaces = getListCtx().updatePlaces;
-	const {userLocation, refreshLocation} = useLocationCtx();
-
-	// const userLocRef = useRef([0,0])
-
+	const {globalStyles} = useStyle();
 	const [coord, setCoord] = useState<Coordinates | undefined>(undefined);
 	const [error, setError] = useState<string | undefined>(undefined);
 	const [userCentedMap, setUserCenteredMap] = useState<boolean>(true);
@@ -33,7 +30,7 @@ export function ExploreScreen({navigation}: ExploreScreenProps) {
 	};
 
 	return(<>
-	<View style={{flex:1, marginVertical: 0}}>
+	<View style={[globalStyles.screenContainer, {flex:1, marginVertical: 0}]}>
 		<MapTemplate
 			onPress={(feature:any) => {setError(undefined); setUserCenteredMap(false); const [longitude, latitude] = feature.geometry.coordinates; setCoord({latitude: latitude, longitude: longitude})}}
 			cameraRef={cameraRef}
@@ -77,9 +74,14 @@ export function ExploreScreen({navigation}: ExploreScreenProps) {
 
 export function ExploreStack() {
 	console.log("Rendering ListStack");
+	const {globalStyles} = useStyle();
 	
 	return(
-		<Stack.Navigator initialRouteName='Explore' screenOptions={{headerShown: true}}>
+		<Stack.Navigator initialRouteName='Explore' screenOptions={{
+			headerShown: true,
+			headerTitleStyle: globalStyles.title,
+			headerStyle: globalStyles.titleContainer,
+		}}>
 			<Stack.Screen name="Explore" options={{title: 'Map', headerShown: false}} component={ExploreScreen} />
 			<Stack.Screen name="EditPlace" options={{title: 'Add place'}} component={EditPlace} />
 		</Stack.Navigator>

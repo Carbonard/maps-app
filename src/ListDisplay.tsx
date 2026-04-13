@@ -3,12 +3,12 @@ import { Text, View } from 'react-native';
 
 import { Place } from './Types'
 import { DisplayListProps } from './Types'
-import { getListCtx } from './Context';
+import { UseListCtx } from './Context';
 import { MapCircle, MapTemplate } from './Maps';
 
 export function DisplayList({route, navigation}: DisplayListProps) {
 	console.log("Rendering DisplayList");
-	const placesList = getListCtx().placeList;
+	const placesList = UseListCtx().placeList;
 
 	const cameraRef = useRef<any>(null);
 	const [mapReady, setMapReady] = useState<boolean>(false)
