@@ -1,10 +1,11 @@
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, StyleProp, ViewStyle, TextStyle } from "react-native";
 import { useStyle } from "./Themes";
 
-interface TappableProps {
+export interface TappableProps {
 	title: string;
 	onPress: () => void;
-	style?: any;
+	style?: StyleProp<ViewStyle>;
+	textStyle?: StyleProp<TextStyle>,
 	color?: string;
 	BGcolor?: string;
 	disabledColor?: string;
@@ -16,6 +17,7 @@ export function Tappable({
 	title,
 	onPress,
 	style,
+	textStyle,
 	BGcolor,
 	color,
 	disabledColor,
@@ -40,7 +42,7 @@ export function Tappable({
 			onPress={onPress}
 			disabled={disabled}
 		>
-			<Text style={{color: disabled? disabledColor : color}}>
+			<Text style={[{color: disabled? disabledColor : color}, textStyle]}>
 				{title}
 			</Text>
 		</Pressable>

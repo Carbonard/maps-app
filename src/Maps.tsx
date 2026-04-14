@@ -1,8 +1,8 @@
 import { MapView, Camera, RasterSource, RasterLayer, ShapeSource, CircleLayer, UserLocation} from '@maplibre/maplibre-react-native';
-import { ReactNode, useState } from 'react';
+import { cloneElement, ReactElement, ReactNode, useState } from 'react';
 import { Coordinates } from './Types';
 import { Button, View, Text } from 'react-native';
-import { Tappable } from './Buttons';
+import { Tappable, TappableProps } from './Buttons';
 
 export const animationDuration = 1000;
 
@@ -62,6 +62,7 @@ interface MapInterfaceProps {
 	userCentered?: boolean;
 	displayUser?: boolean;
 	mode?: 'osm' | 'street' | 'satellite' | 'hybrid' | 'terrain';
+	rightButtons?: ReactElement<TappableProps>[];
 	onMapLoaded?: () => void;
 };
 
@@ -76,6 +77,7 @@ export function MapTemplate ({
 	userCentered = true,
 	displayUser = true,
 	mode = 'satellite',
+	rightButtons = [],
 	onMapLoaded = undefined
 	}: MapInterfaceProps){
 
@@ -87,8 +89,9 @@ export function MapTemplate ({
 
 	return(
 		<>
-		<MapView style={{flex:1}} onPress={onPress} key={currentMode} onDidFinishLoadingMap={onMapLoaded}>
+		<MapView style={{flex:1}} onPress={onPress} onDidFinishLoadingMap={onMapLoaded}>
 			<RasterSource
+				key={currentMode}
 				id={currentMode}
 				tileUrlTemplates={getTileUrl(currentMode).urls}
 				tileSize={256}
@@ -117,14 +120,18 @@ export function MapTemplate ({
 			{children}
 		</MapView>
 		{/* <Text>{currentMode}</Text> */}
-		<View>
+		<View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10, position: 'absolute', bottom: 10, left:0, right:0}}>
 			<Tappable
 				title='Switch Map'
 				onPress={() => {
 					setCurrentMode(prev => modeArray[(modeArray.indexOf(prev)+1)%modeArray.length]);
 				}}
 				style={{alignSelf: 'center', margin: 3}}
+				textStyle={{fontWeight: 'bold'}}
 			/>
+			{rightButtons && rightButtons.map((item, index) => <View key={index}>
+				{cloneElement(item, {textStyle: [item.props.style, {fontWeight: 'bold'}]})}
+			</View>)}
 		</View>
 		</>
 	);

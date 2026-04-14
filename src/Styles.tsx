@@ -13,6 +13,7 @@ type theme = {
 	disabledBackground: string;
 	disabledColor: string;
 	iconFocusColor: string;
+	iconNoFocusColor: string;
 	textInputBorder: string;
 }
 
@@ -34,6 +35,7 @@ function lightTheme(
 		buttonColor: `rgba(${BGColor[0]}, ${BGColor[1]}, ${BGColor[2]}, 1)`,
 		disabledColor: `rgba(${BGColor[0]}, ${BGColor[1]}, ${BGColor[2]}, 0.5)`,
 		backgroundColor: `rgba(${BGColor[0]}, ${BGColor[1]}, ${BGColor[2]}, 1)`,
+		iconNoFocusColor: `rgba(${BGColor[0]}, ${BGColor[1]}, ${BGColor[2]}, 1)`,
 		iconFocusColor: 'red',
 	}
 }
@@ -49,7 +51,7 @@ export const themes:theme[] = [
 	// Green
 	{...lightTheme([0, 80, 40], [200, 230, 200], [230, 250, 230]), iconFocusColor: '#ff0'},
 	// Red
-	{...lightTheme([200, 30, 30], [170, 170, 170], [200, 200, 200]), textColor: '#000', iconFocusColor: '#000'},
+	{...lightTheme([200, 0, 0], [170, 170, 170], [200, 200, 200]), textColor: '#000', iconFocusColor: '#fff', iconNoFocusColor: '#000'},
 ];
 
 export const themesLength = themes.length;
@@ -98,11 +100,11 @@ export function newStyles(currentTheme: number) {
 			backgroundColor: themes[currentTheme].buttonBackgroundColor,
 			color: themes[currentTheme].buttonColor,
 			dissabledBackgroundColor: themes[currentTheme].disabledBackground,
-			dissabledColor: themes[currentTheme].disablesColor
+			dissabledColor: themes[currentTheme].disabledColor
 		},
 		icon: {
 			focusColor: themes[currentTheme].iconFocusColor,
-			noFocusColor: themes[currentTheme].backgroundColor
+			noFocusColor: themes[currentTheme].iconNoFocusColor
 		},
 	})
 }

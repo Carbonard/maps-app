@@ -21,9 +21,20 @@ export function ExploreScreen({navigation}: ExploreScreenProps) {
 	const [coord, setCoord] = useState<Coordinates | undefined>(undefined);
 	const [error, setError] = useState<string | undefined>(undefined);
 	const [userCentedMap, setUserCenteredMap] = useState<boolean>(true);
+	let timeoutId: number | undefined = undefined;
 
 	const cameraRef = useRef<any>(null);
 
+	const clearError = () => {
+		if (error !== undefined)
+		{
+			if (timeoutId !== undefined)
+					clearTimeout(timeoutId);
+			timeoutId = setTimeout(() => {setError(undefined); timeoutId = undefined}, 3000);
+		}
+	};
+
+	// useEffect(clearError, [error]);
 
 	function goToUser(zoom: number) {
 		setUserCenteredMap(true);
@@ -33,12 +44,39 @@ export function ExploreScreen({navigation}: ExploreScreenProps) {
 	return(<>
 	<View style={[globalStyles.screenContainer, {flex:1, marginVertical: 0}]}>
 		<MapTemplate
-			onPress={(feature:any) => {setError(undefined); setUserCenteredMap(false); const [longitude, latitude] = feature.geometry.coordinates; setCoord({latitude: latitude, longitude: longitude})}}
+			onPress={(feature:any) => {
+				setError(undefined);
+				setUserCenteredMap(false);
+				setTimeout(() => {
+					const [longitude, latitude] = feature.geometry.coordinates;
+					setCoord({latitude: latitude, longitude: longitude});
+				}, );
+			}}
 			cameraRef={cameraRef}
 			zoomLevel={9}
 			userCentered={userCentedMap}
 			onMapLoaded={() => setUserCenteredMap(false)}
 			displayUser={true}
+			rightButtons={[
+				<Tappable title='Save place' onPress={() => {
+					if (!coord)
+					{
+						setError('Select a point on the map!');
+						clearError();
+						return;
+					}
+					const place = {
+						id: Math.random().toString(),
+						coordinates: coord,
+						name: '',
+						fav: false,
+					};
+					navigation.navigate("EditPlace", {place: place, mode: 'add'});
+					setCoord(undefined);
+					setError(undefined);
+				}}/>,
+				<Tappable title='Find me' onPress={() => goToUser(14)} />
+			]}
 		>
 			{coord && <MapCircle 
 				center={coord}
@@ -46,29 +84,20 @@ export function ExploreScreen({navigation}: ExploreScreenProps) {
 		</MapTemplate>
 		<View style={{alignItems: 'center'}}>
 			{error &&
-			<Text style={{color: 'white', backgroundColor: 'red', fontWeight: 'bold', padding: 5, marginTop: 10}}>
+			<Text style={{
+				color: 'white',
+				backgroundColor: 'red',
+				fontWeight: 'bold',
+				padding: 5,
+				// marginTop: 10,
+				position: 'absolute',
+				bottom: 100,
+			}}>
 				{error}
 			</Text>}
 		</View>
-		<View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10}}>
-			<Tappable title='Save place' onPress={() => {
-				if (!coord)
-				{
-					setError('Select a point on the map!');
-					return;
-				}
-				const place = {
-					id: Math.random().toString(),
-					coordinates: coord,
-					name: '',
-					fav: false,
-				};
-				navigation.navigate("EditPlace", {place: place, mode: 'add'});
-				setCoord(undefined);
-				setError('');
-			}}/>
-			<Tappable title='Find me' onPress={() => goToUser(14)} />
-		</View>
+		{/* <View >
+		</View> */}
 	</View>
 		</>)
 }

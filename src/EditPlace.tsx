@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, View, Button, TextInput, Pressable, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Pressable, Keyboard, StyleProp, ViewStyle } from 'react-native';
 
 import { Coordinates } from './Types'
 import { EditPlaceProps, } from './Types'
@@ -9,7 +9,7 @@ import { MapCircle, MapTemplate } from './Maps';
 import { useStyle } from './Themes';
 import { Tappable } from './Buttons';
 
-function EditItem({title, children, style}: {title: string, children: React.ReactNode, style?: any}) {
+function EditItem({title, children, style}: {title: string, children: React.ReactNode, style?: StyleProp<ViewStyle>}) {
 	const {globalStyles} = useStyle();
 
 	return(
