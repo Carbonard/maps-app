@@ -15,7 +15,7 @@ function EditItem({title, children, style}: {title: string, children: React.Reac
 	return(
 		<View style={[styles.editItemContainer, style]}>
 			<Text style={globalStyles.text}>{title}</Text>
-			<View style={{flex:1}}>
+			<View >
 				{children}
 			</View>
 		</View>
@@ -151,7 +151,7 @@ export function EditPlace({route, navigation}: EditPlaceProps) {
 const styles = StyleSheet.create({
 	editContainer: {
 		flex: 1,
-		alignItems: 'center',
+		alignItems: 'flex-start',
 		paddingTop:15
 	},
 	editItemContainer: {
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
 	},
 	name: {
 		margin: 10,
-		width: 'auto',
+		maxWidth: '90%',
 		minWidth: 150
 	},
 	ratingContainer: {

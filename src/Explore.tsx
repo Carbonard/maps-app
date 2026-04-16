@@ -15,24 +15,31 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const c0 = {longitude: -3.663, latitude: 40.515}
 
 export function ExploreScreen({navigation}: ExploreScreenProps) {
-	console.log("Rendering MapWindow");
+	console.log("Rendering ExploreScreen");
 
 	const {globalStyles} = useStyle();
 	const [coord, setCoord] = useState<Coordinates | undefined>(undefined);
 	const [error, setError] = useState<string | undefined>(undefined);
 	const [userCentedMap, setUserCenteredMap] = useState<boolean>(true);
-	let timeoutId: number | undefined = undefined;
+	let timeoutRef = useRef<number | undefined>(undefined);
 
 	const cameraRef = useRef<any>(null);
 
-	const clearError = () => {
-		if (error !== undefined)
-		{
-			if (timeoutId !== undefined)
-					clearTimeout(timeoutId);
-			timeoutId = setTimeout(() => {setError(undefined); timeoutId = undefined}, 3000);
-		}
+	function printError(err: string) {
+		setError(err);
+		if (timeoutRef.current !== undefined)
+				clearTimeout(timeoutRef.current);
+		timeoutRef.current = setTimeout(() => {setError(undefined); timeoutRef.current = undefined}, 3000);
 	};
+
+	useEffect(() => {
+		return () => {
+			if (timeoutRef.current !== undefined) {
+				clearTimeout(timeoutRef.current);
+			}
+			setError(undefined);
+		};
+	}, []);
 
 	// useEffect(clearError, [error]);
 
@@ -61,15 +68,17 @@ export function ExploreScreen({navigation}: ExploreScreenProps) {
 				<Tappable title='Save place' onPress={() => {
 					if (!coord)
 					{
-						setError('Select a point on the map!');
-						clearError();
+						printError('Select a point on the map!');
+						// setError('Select a point on the map!');
+						// clearError();
 						return;
 					}
-					const place = {
+					const place : Place = {
 						id: Math.random().toString(),
 						coordinates: coord,
 						name: '',
 						fav: false,
+						comments: [],
 					};
 					navigation.navigate("EditPlace", {place: place, mode: 'add'});
 					setCoord(undefined);

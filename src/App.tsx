@@ -12,6 +12,7 @@ import { ConfigurationScreen, currentTheme } from './Configuration';
 import { themes } from './Styles';
 import { StylesProvider, useStyle } from './Themes';
 import { memo } from 'react';
+import { TextStyle, ViewStyle } from 'react-native';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -35,8 +36,8 @@ function MainTabs() {
 		<ListCtx.Provider value={{placeList: placesList, updatePlaces: updatePlaces}}>
 			<Tab.Navigator initialRouteName="List of places"
 				screenOptions={{
-					tabBarActiveTintColor: globalStyles.icon.focusColor,
-					tabBarInactiveTintColor: globalStyles.icon.noFocusColor,
+					tabBarActiveTintColor: globalStyles.icon.color,
+					tabBarInactiveTintColor: globalStyles.inactiveIcon.color,
 					headerShown: false,
 					tabBarStyle: globalStyles.titleContainer,
 					headerTitleStyle: globalStyles.title,

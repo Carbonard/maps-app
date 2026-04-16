@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { ImageStyle, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 // import { currentTheme } from './Configuration';
 
 type theme = {
@@ -71,7 +71,7 @@ export function newStyles(currentTheme: number) {
 		},
 		text: {
 			color: '#000',
-			fontSize: 15,
+			fontSize: 17,
 		},
 		textContainer: {
 			backgroundColor: themes[currentTheme].textBackgroundColor,
@@ -88,6 +88,7 @@ export function newStyles(currentTheme: number) {
 		},
 		screenContainer: {
 			backgroundColor: themes[currentTheme].backgroundColor,
+			flex: 1,
 		},
 		textBox: {
 			borderWidth: 1,
@@ -99,12 +100,18 @@ export function newStyles(currentTheme: number) {
 			padding: 10,
 			backgroundColor: themes[currentTheme].buttonBackgroundColor,
 			color: themes[currentTheme].buttonColor,
-			dissabledBackgroundColor: themes[currentTheme].disabledBackground,
-			dissabledColor: themes[currentTheme].disabledColor
+		},
+		disabledButton: {
+			borderRadius: 100,
+			padding: 10,
+			backgroundColor: themes[currentTheme].disabledBackground,
+			color: themes[currentTheme].disabledColor
 		},
 		icon: {
-			focusColor: themes[currentTheme].iconFocusColor,
-			noFocusColor: themes[currentTheme].iconNoFocusColor
+			color: themes[currentTheme].iconFocusColor as string,
+		},
+		inactiveIcon: {
+			color: themes[currentTheme].iconNoFocusColor as string
 		},
 	})
 }

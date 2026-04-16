@@ -31,9 +31,9 @@ export function Tappable({
 	if (!color)
 		color = globalStyles.button.color;
 	if (!disabledBGcolor)
-		disabledBGcolor = globalStyles.button.dissabledBackgroundColor;
+		disabledBGcolor = globalStyles.disabledButton.backgroundColor;
 	if (!disabledColor)
-		disabledColor = globalStyles.button.dissabledColor;
+		disabledColor = globalStyles.disabledButton.color;
 
 	return(
 		<Pressable

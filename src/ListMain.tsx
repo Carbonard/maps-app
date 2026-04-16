@@ -2,14 +2,21 @@ import { useState, useRef } from 'react';
 import { StyleSheet, Text, View, Button, Pressable, FlatList, Modal, Alert } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { RootStackParamList } from './Types'
-import { MainListProps, PlaceProps,  } from './Types'
+import { Place, PlaceUpdater, RootStackParamList } from './Types'
+import { MainListProps  } from './Types'
 import { UseListCtx } from './Context';
 import { EditPlace } from './EditPlace';
 import { FavButton, maxRating } from './PlaceUtils';
 import { DisplayList } from './ListDisplay';
 import { useStyle } from './Themes';
 import { Tappable } from './Buttons';
+import { PlaceScreen } from './Place';
+
+
+interface PlaceProps {
+	place: Place;
+	navigation: any;
+};
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -38,7 +45,7 @@ function DropdownButton({ place, navigation } : PlaceProps) {
 			setOpen(prev => !prev)}}>
 		<Text style={[styles.listText, {padding:10}]}>{"\u2807"}</Text>
 	</Pressable>
-	<Modal visible={isOpen} transparent >
+	<Modal visible={isOpen} backdropColor='rgba(0,0,0,0)' animationType='fade'>
 		<Pressable style={{flex:1}} onPress={() => setOpen(false)}>
 			<View style={[styles.dropdownContainer, {
 				top: menuPosition.top,
@@ -57,20 +64,21 @@ function DropdownButton({ place, navigation } : PlaceProps) {
 	</>);
 }
 
-// const PlaceItem = memo(
-function PlaceItem({place, updatePlaces, navigation} : PlaceProps) {
+function PlaceItem({place, navigation} : PlaceProps) {
 	console.log("Rendering PlaceItem");
 	const {globalStyles} = useStyle();
 
 	return(
-		<View style={[globalStyles.screenContainer, styles.listItem]}>
-			<View style={[globalStyles.listItemContainer, {flexDirection: 'row', flex: 1}]}>
+		<View style={[globalStyles.listItemContainer, styles.listItem]}>
+			<View style={{flexDirection: 'row', flexShrink: 1}}>
 				<FavButton placeId={place.id}/>
-				<Text style={[[globalStyles.listText, styles.listText], {flexShrink:1}]}>{place.name}</Text>
+				<Pressable onPress={() => navigation.navigate("Place", {placeId: place.id})} style={{flexShrink:1, flex:1}} >
+					<Text style={[globalStyles.listText, styles.listText, {flexShrink:1}]}>{place.name}</Text>
+				</Pressable>
 			</View>
-			<View style={[globalStyles.listItemContainer, {flexDirection: 'row'}]}>
+			<View style={{flexDirection: 'row'}}>
 				<Text style={[globalStyles.listText, styles.listText]}>{place.rating != undefined? place.rating + '/' + maxRating : null}</Text>
-				<DropdownButton place={place} updatePlaces={updatePlaces} navigation={navigation} />
+				<DropdownButton place={place} navigation={navigation} />
 			</View>
 		</View>
 	);
@@ -88,12 +96,11 @@ function ListWindow({route, navigation} : MainListProps) {
 			renderItem={({item}) => (
 				<PlaceItem
 					place={item}
-					updatePlaces={ctx.updatePlaces}
 					navigation={navigation}
 				/>
 			)}
 		/>
-		<Tappable onPress={() => navigation.navigate('DisplayList')} title='View Map' style={{margin: 20, width: 'auto', alignSelf: 'center'}} />
+		<Tappable onPress={() => navigation.navigate('DisplayList')} title='View Map' style={{margin: 20, width: 'auto', alignSelf: 'center', position:'absolute', bottom: 20}} />
 		</View>
 	)
 }
@@ -107,10 +114,12 @@ export function ListStack() {
 			headerShown: true,
 			headerTitleStyle: globalStyles.title,
 			headerStyle: globalStyles.titleContainer,
+			headerBackVisible: false,
 		}} >
-			<Stack.Screen name="MainList" options={{title: 'My places'}} component={ListWindow} />
-			<Stack.Screen name="EditPlace" options={{title: 'Edit places'}} component={EditPlace} />
-			<Stack.Screen name="DisplayList" options={{title: 'My places'}} component={DisplayList} />
+			<Stack.Screen name="MainList" options={{title: 'My Places'}} component={ListWindow} />
+			<Stack.Screen name="Place" options={{title: 'Your Place'}} component={PlaceScreen} />
+			<Stack.Screen name="EditPlace" options={{title: 'Edit Place'}} component={EditPlace} />
+			<Stack.Screen name="DisplayList" options={{title: 'My Places'}} component={DisplayList} />
 		</Stack.Navigator>
 	);
 }
@@ -125,7 +134,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	listText: {
-		padding: 10,
+		padding: 7,
+		paddingVertical: 10,
 	},
 	dropdownContainer: {
 		backgroundColor: '#fff',
